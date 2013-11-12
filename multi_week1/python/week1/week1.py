@@ -19,24 +19,11 @@ DEFAULT_DIST_TYPE = 'euclidean'
 def extractColorHistogram( im ):
     histo = []
     for channel in range(im.shape[-1]):
-        histo.append(np.bincount(im[:, :, channel].flatten())) 
+        histo.append(np.bincount(im[:, :, channel].flatten(), minlength=256)) 
     return np.concatenate(histo)
 
 
-def none2num(value):
-    if value is None:
-        return 0.
-    return value
-
-
 def computeVectorDistance( vec1, vec2, dist_type ):
-    len1 = len(vec1)
-    len2 = len(vec2)
-    if len1 < len2:
-        vec1 = np.concatenate((vec1, (len2 - len1) * [0]))
-    elif len2 < len1:
-        vec2 = np.concatenate((vec2, (len1 - len2) * [0]))
-
     if dist_type == 'euclidean' or dist_type == 'l2':
         fn = lambda x, y: (x - y) ** 2
     elif dist_type == 'intersect' or dist_type == 'l1':
