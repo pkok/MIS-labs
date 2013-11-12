@@ -13,60 +13,54 @@ import sys
 import math
 import scipy.signal as sgn
 
+DEFAULT_DIST_TYPE = 'euclidean'
+
+
 def extractColorHistogram( im ):
-    # PRE [DO NOT TOUCH]
     histo = []
-    
-    # WRITE YOUR CODE HERE
-    # im_r = ...
-    # histo_r = ...
-    # im_g = ...
-    # histo_g = ...
-    # im_b = ...
-    # histo_b = ...
-    
-    # RETURN [DO NOT TOUCH]
-    histo = np.concatenate([histo_r, histo_g, histo_b])
-    return histo
+    for channel in range(im.shape[-1]):
+        histo.append(np.bincount(im[:, :, channel].flatten())) 
+    return np.concatenate(histo)
+
+
+def none2num(value):
+    if value is None:
+        return 0.
+    return value
+
 
 def computeVectorDistance( vec1, vec2, dist_type ):
-    # PRE [DO NOT TOUCH]
-    dist = []
-    
-    # WRITE YOUR CODE HERE
-    # if dist_type == 'euclidean' or dist_type == 'l2':
-        # dist = ...
-    # elif dist_type == 'intersect' or dist_type == 'l1':
-        # dist = ...
-    # elif dist_type == 'chi2':
-        # dist = ...
-    # elif dist_type == 'hellinger':
-        # dist = ...
-                        
-    # RETURN [DO NOT TOUCH]
-    return dist
-    
-def computeImageDistances( images ):
-    # PRE [DO NOT TOUCH]
-    imdists = []
-    
-    # WRITE YOUR CODE HERE
-    # ...
-    # imdists = ...
-    
-    # RETURN [DO NOT TOUCH]
-    return imdists
-    
-def rankImages( imdists, query_id ):
-    # PRE [DO NOT TOUCH]
-    ranking = []
+    len1 = len(vec1)
+    len2 = len(vec2)
+    if len1 < len2:
+        vec1 = np.concatenate((vec1, (len2 - len1) * [0]))
+    elif len2 < len1:
+        vec2 = np.concatenate((vec2, (len1 - len2) * [0]))
 
-    # WRITE YOUR CODE HERE
-    # ...
-    # ranking = ...
+    if dist_type == 'euclidean' or dist_type == 'l2':
+        fn = lambda x, y: (x - y) ** 2
+    elif dist_type == 'intersect' or dist_type == 'l1':
+        fn = min
+    elif dist_type == 'chi2':
+        fn = lambda x, y: ((x - y) ** 2) / (x + y)
+    elif dist_type == 'hellinger':
+        fn = lambda x, y: math.sqrt(x * y)
+
+    return map(fn, vec1, vec2)
+
+
+def computeImageDistances( images ):
+    return [[week1.computeVectorDistance(histo1, histo2, DEFAULT_DIST_TYPE)
+        for histo2 in histo]
+        for histo1 in histo]
     
-    # RETURN [DO NOT TOUCH]
-    return ranking
+
+def rankImages( imdists, query_id ):
+    reverse_order = DIST_TYPE in ['intersect', 'l1', 'helliger']
+    return sorted(range(len(imdists[query_id])),
+            key=lambda x: imdists[query_id][x],
+            reverse=reverse_order)
+
 
 def get_gaussian_filter(sigma):
     # PRE [DO NOT TOUCH]
@@ -74,47 +68,38 @@ def get_gaussian_filter(sigma):
     G = []
     
     # WRITE YOUR CODE HERE FOR DEFINING THE HALF SIZE OF THE FILTER
-    # half_size = ...
-    #
+    half_size = 3 * sigma
     x = np.arange(-half_size, half_size + 1)        
 
     # WRITE YOUR CODE HERE
-    # G
+    G = np.exp(-x ** 2 / (2 * sigma ** 2)) / (sigma * math.sqrt(2 * math.pi))
                         
     # RETURN [DO NOT TOUCH]
     G = G / sum(G) # It is important to normalize with the total sum of G
     return G
     
+
 def get_gaussian_der_filter(sigma, order):
     # PRE [DO NOT TOUCH]
     sigma = float(sigma)
     dG = []
     
     # WRITE YOUR CODE HERE
-    # half_size = ...
-    #
+    half_size = 3 * sigma
     x = np.arange(-half_size, half_size + 1)
     
-    # if order == 1:
-        # WRITE YOUR CODE HERE
-        # dG = ...
-    # elif order == 2:
-        # WRITE YOUR CODE HERE
+    if order == 1:
+        dG = -x / (sigma ** 2) * get_gaussian_filter(sigma)
+    elif order == 2:
+        raise NotImplementedError()
         # dG = ...
 
     # RETURN [DO NOT TOUCH]
     return dG
 
 def gradmag(im_dr, im_dc):
-    # PRE [DO NOT TOUCH]
-    im_dmag = []
-
-    # WRITE YOUR CODE HERE
-    # im_dmag = ...
-    #
-
-    # RETURN [DO NOT TOUCH]
-    return im_dmag    
+    im_dmag = np.sqrt(im_dr * im_dr + im_dc * im_dc)
+    return im_dmag / sum(im_dmag)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # [ALREADY IMPLEMENTED. DO NOT TOUCH]
