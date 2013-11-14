@@ -13,9 +13,9 @@ import numpy as np
 import scipy.signal as sgn
 
 
+SIMILARITY_TYPES = ('euclidean', 'l2', 'intersect', 'chi2', 'hellinger')
 ROOT_OF_SQUARED_SUM = lambda h: math.sqrt(sum(map(lambda x: x * x, h)))
 SUM = lambda h: float(sum(h))
-DEFAULT_DIST_TYPE = 'euclidean'
 
 
 def extractColorHistogram(im):
@@ -79,10 +79,10 @@ def get_image(id):
     return np.array(plt.imread('../../data/objects/flower/%d.jpg' % id))
 
 
-def computeImageDistances(images):
+def computeImageDistances(images, dist_type=SIMILARITY_TYPES[0]):
     histo = [extractColorHistogram(np.array(plt.imread(image)))
              for image in images]
-    return [[computeVectorDistance(histo1, histo2, DEFAULT_DIST_TYPE)
+    return [[computeVectorDistance(histo1, histo2, dist_type)
              for histo2 in histo]
             for histo1 in histo]
 
