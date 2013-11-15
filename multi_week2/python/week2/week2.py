@@ -5,34 +5,98 @@
 #    DESCRIPTION: TODO
 #
 #------------------------------------------------------------------------------
-import numpy as np
 import math
-import sys
+import os
 import platform
+import sys
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
+
+import numpy as np
 from PIL import Image
 from pylab import *
-import os
 
 sys.path.insert(0, '../')
 import tools
 
+CACHING = True
+RENEW_CACHE = False
+WRITTEN_TO_CACHE = False
+
+EMPTY_CACHE = {
+        'match_sift': {},
+        'compute_sift': {},
+        }
+
+if CACHING and not RENEW_CACHE:
+    try:
+        with open('cache.pickle', 'r') as cache_file:
+            cache = pickle.load(cache_file)
+            for key, value in EMPTY_CACHE.items():
+                if key not in cache:
+                    cache[key] = value
+    except IOError:
+        cache = EMPTY_CACHE
+elif CACHING and RENEW_CACHE:
+    cache = EMPTY_CACHE
+
+
+def store_cache():
+    global CACHING
+    global WRITTEN_TO_CACHE
+    if CACHING and WRITTEN_TO_CACHE:
+        with open('cache.pickle', 'w') as cache_file:
+            pickle.dump(cache, cache_file)
+            WRITTEN_TO_CACHE = False
+
+
+def arrayhash(array):
+    writeable = array.flags.writeable
+    array.flags.writeable = False
+    h = hash(array.data)
+    array.flags.writeable = writeable
+    return h
 
 ##############################################################################
 ## YOUR IMPLEMENTATIONS
 ##############################################################################
 def match_sift(sift1, sift2, dist_thresh=1.1):
+    if CACHING:
+        h1 = arrayhash(sift1)
+        h2 = arrayhash(sift2)
+        if (h1, h2) in cache['match_sift']:
+            print "retrieving from cache: 'match_sift'"
+            return cache['match_sift'][h1, h2]
+
     matches = -1 * np.ones((sift1.shape[0]), 'int')
 
     # FIRST NORMALIZE SIFT VECTORS
-    # sift1 = tools.normalizeL...
-    # sift2 = tools.normalizeL...
-
+    sift1 = tools.normalizeL2(sift1, 0)
+    sift2 = tools.normalizeL2(sift2, 0)
+    
     # FOR ALL FEATURES IN SIFT1 FIND THE 2 CLOSEST FEATURES IN SIFT2
-
     # IF SIFT1_i IS MUCH CLOSER TO SIFT2_j1 THAN SIFT2_j2, THEN CONSIDER THIS
     # A MUCH MUCH CLOSER MEANS MORE THAN A PREDEFINED DISTANCE THRESHOLD
+    dists = np.zeros(sift2.shape[0], 'float')
+    ranked_ratio = float('infinity') * np.ones(sift1.shape[0], 'float')
+    dist_l2 = lambda x, y: float(x * y)
+    for i, s1 in enumerate(sift1):
+        for j, s2 in enumerate(sift2):
+            dists[j] = sum(map(dist_l2, s1, s2))
+        closest_id = np.argmin(dists)
+        closest = dists[closest_id]
+        dists[closest_id] = float('infinity')
+        second_closest = np.amin(dists)
 
-    return matches
+        if closest / float(second_closest) < dist_thresh:
+            matches[i] = closest_id
+        ranked_ratio[i] = closest / float(second_closest)
+        matches[i] = closest_id
+    cache['match_sift'][arrayhash(sift1), arrayhash(sift2)] = matches, ranked_ratio
+    WRITTEN_TO_CACHE = True
+    return matches, ranked_ratio
 
 
 def project_point_via_homography(H, p):
@@ -42,7 +106,7 @@ def project_point_via_homography(H, p):
     p = np.concatenate((p, [1]))
 
     # PUT YOUR CODE HERE
-    # newp = ...
+    newp = np.dot(H, p)
 
     # RE-NORMALIZATION BEFORE RETURNING THE POINTS [DO NOT TOUCH]
     newp = newp / newp[2]
@@ -60,10 +124,10 @@ def plot_matches(im1, im2, locs1, locs2, matches, color='r', newfig=True):
         plt.axis('off')
 
     cols1 = np.array(im1).shape[1]
-    plot_features(None, locs1, 'r')
+    plot_features(None, locs1, color='r')
     plot_features(None,
                   np.array((locs2[:, 0] + cols1, locs2[:, 1])).transpose(),
-                  'g')
+                  color='g')
 
     for i in range(0, locs1.shape[0]):
         if matches[i] != -1:
@@ -119,6 +183,12 @@ def compute_sift(impath, edge_thresh=10, peak_thresh=5):
               + str(peak_thresh))
 
     im1 = Image.open(impath).convert('L')
+
+    if CACHING and not RENEW_CACHE:
+        if im1 in cache['compute_sift']:
+            print "retrieving from cache: 'compute_sift'"
+            return cache['compute_sift'][im1]
+
     filpat1, filnam1, filext1 = tools.fileparts(impath)
     temp_im1 = 'tmp_' + filnam1 + '.pgm'
     im1.save(temp_im1)
@@ -142,6 +212,9 @@ def compute_sift(impath, edge_thresh=10, peak_thresh=5):
     frames, sift = read_sift_from_file(filnam1 + '.sift.output')
     os.remove(temp_im1)
     os.remove(filnam1 + '.sift.output')
+    if CACHING:
+        cache['compute_sift'][im1] = frames, sift
+        WRITTEN_TO_CACHE = True
     return frames, sift
 
 
