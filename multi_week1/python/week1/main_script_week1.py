@@ -158,7 +158,6 @@ for i in np.arange(1, 1 + 5):
     ax.imshow(im)
     ax.axis('off')
     ax.set_title(impaths[sorted_id[i - 1]])
-plt.show()
 
 ######
 # E.5 PUT YOUR CODE INTO THE FUNCTIONS computeImageDistances( images )
@@ -168,42 +167,55 @@ plt.show()
 # F. Gaussian blurring using gaussian filter for convolution
 
 # F.1 Open an image
+fig = plt.figure()
 im = np.array(Image.open('../../data/objects/flower/1.jpg').convert('L'))
 plt.imshow(im, cmap='gray')  # To show as grayscale image
+plt.axis("off")
+plt.show()
 
 # F.2 Compute gaussian filter
-sigma = 10.0
-G = week1.get_gaussian_filter(sigma)
+for sigma in [1., 5., 10.]:
+    #sigma = 10.0
+    G = week1.get_gaussian_filter(sigma)
 
-# F.3 Apply gaussian convolution filter to the image. See the result. Compare with Python functionality
-im_gf = week1.apply_gaussian_conv(im, G)  # [ALREADY IMPLEMENTED, YOU ONLY NEED TO INPUT YOUR GAUSSIAN FILTER G]
-im_gf2 = filters.gaussian_filter(im, sigma)  # The result using Python functionality
+    # F.3 Apply gaussian convolution filter to the image. See the result. Compare with Python functionality
+    im_gf = week1.apply_gaussian_conv(im, G)  # [ALREADY IMPLEMENTED, YOU ONLY NEED TO INPUT YOUR GAUSSIAN FILTER G]
+    im_gf2 = filters.gaussian_filter(im, sigma)  # The result using Python functionality
 
-fig = plt.figure()
-ax = fig.add_subplot(1, 2, 1)
-ax.imshow(im_gf, cmap='gray')
-ax = fig.add_subplot(1, 2, 2)
-ax.imshow(im_gf2, cmap='gray')
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 2, 1)
+    ax.get_xaxis().set_visible(False)
+    ax.get_yaxis().set_visible(False)
+    ax.imshow(im_gf, cmap='gray')
+    ax = fig.add_subplot(1, 2, 2)
+    ax.get_xaxis().set_visible(False)
+    ax.get_yaxis().set_visible(False)
+    ax.imshow(im_gf2, cmap='gray')
 
-# F.4 Compute first order gaussian derivative filter in one dimension, row or column
-dG = week1.get_gaussian_der_filter(sigma, 1)
+    # F.4 Compute first order gaussian derivative filter in one dimension, row or column
+    dG = week1.get_gaussian_der_filter(sigma, 1)
 
-# Apply first on the row dimension
-im_drow = week1.apply_filter(im, dG, 'row')  # [ALREADY IMPLEMENTED, YOU ONLY NEED TO INPUT YOUR GAUSSIAN DERIVATIVE dG YOU JUST IMPLEMENTED]
-# Apply then on the column dimension
-im_dcol = week1.apply_filter(im, dG, 'col')  # [ALREADY IMPLEMENTED, YOU ONLY NEED TO INPUT YOUR GAUSSIAN DERIVATIVE dG YOU JUST IMPLEMENTED]
+    # Apply first on the row dimension
+    im_drow = week1.apply_filter(im, dG, 'row')  # [ALREADY IMPLEMENTED, YOU ONLY NEED TO INPUT YOUR GAUSSIAN DERIVATIVE dG YOU JUST IMPLEMENTED]
+    # Apply then on the column dimension
+    im_dcol = week1.apply_filter(im, dG, 'col')  # [ALREADY IMPLEMENTED, YOU ONLY NEED TO INPUT YOUR GAUSSIAN DERIVATIVE dG YOU JUST IMPLEMENTED]
 
-fig = plt.figure()
-ax = fig.add_subplot(1, 2, 1)
-ax.imshow(im_drow, cmap='gray')
-ax = fig.add_subplot(1, 2, 2)
-ax.imshow(im_dcol, cmap='gray')
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 2, 1)
+    ax.imshow(im_drow, cmap='gray')
+    ax.get_xaxis().set_visible(False)
+    ax.get_yaxis().set_visible(False)
+    ax = fig.add_subplot(1, 2, 2)
+    ax.imshow(im_dcol, cmap='gray')
+    ax.get_xaxis().set_visible(False)
+    ax.get_yaxis().set_visible(False)
 
-# F.6 Compute the magnitude and the orientation of the gradients of an image
-im_dmag = week1.gradmag(im_drow, im_dcol)
+    # F.6 Compute the magnitude and the orientation of the gradients of an image
+    im_dmag = week1.gradmag(im_drow, im_dcol)
 
-fig = plt.figure()
-plt.imshow(im_dmag, cmap='gray')
+    fig = plt.figure()
+    plt.imshow(im_dmag, cmap='gray')
+    plt.axis("off")
 
 ######
 # F.6.1 PUT YOUR CODE INTO THE FUNCTIONS get_gaussian_filter(sigma),
