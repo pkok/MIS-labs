@@ -1,0 +1,7 @@
+2013-11-18.11-42-57 ls | wc -l
+2013-11-18.11-43-03 ls codebook_10 | wc -l
+2013-11-18.11-43-06 ls codebook_50 | wc -l
+2013-11-18.11-43-09 ls codebook_100 | wc -l
+2013-11-18.11-43-13 ls codebook_500 | wc -l
+2013-11-18.11-43-17 ls codebook_1000 | wc -l
+2013-11-18.11-50-36 ls codebook_100 | wc -l

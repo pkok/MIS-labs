@@ -1,0 +1,95 @@
+-------------------------------------------------------------------------------
+Assessment guidelines for assignment of Week 3 & 4
+-------------------------------------------------------------------------------
+
+Q1. Individual steps of k-means (section 3)
+	
+	Maximum
+		2 point
+	
+	Evaluation
+		[2 point]	The answer is correct for all K and the observations are correct
+		[1 point] The answer is correct at least for one of the K's
+		[0 points]	The answer is wrong [0 points]
+
+Q2. Running your implemented k-means (section 3)
+	
+	Maximum
+		2 points
+	
+	Evaluation
+		[2 points] 	The k-means implementation is correct and a good stopping criterion was suggested
+		[1 point] Some of the steps of the k-means is at least correct
+		[0 points] 	The answer is wrong
+
+Q3. Color-based image segmentation (section 4)
+
+	Maximum
+		1 point
+	
+	Evaluation
+		[1 points] 	The segmentations are correct and good observations made
+		[0.5 point] At least one of the segmentations is correct
+		[0 points] 	The answer is wrong
+
+Q4. k-means SIFT & Bag-of-Words: calculating storage for raw SIFT (section 5.1)
+
+	Maximum
+		1 point
+	
+	Evaluation
+		[1 point] 	The calculations are correct
+		[0 points] 	The answer is wrong
+
+Q5. Visualizing the words on the image, the conctents of the words and the Bag-of-Words histograms (section 5.1 & 5.2)
+
+	Maximum
+		1 point
+	
+	Evaluation
+		[1 points] 	The visualizations are good and the observations are correct
+		[0.5 point] Some of the visualizations are good
+		[0 points] 	The answer is wrong
+
+Q6. Visualizing Bag-of-Words retrieval (section 6)
+
+	Maximum
+		1 points
+	
+	Evaluation
+		[1 points] 	The top-retrieved images are correct for all queries
+		[0.5 point] The top-retrieved images are correct for some queries
+		[0 points] 	The answer is wrong
+
+Q7. Evaluating Bag-of-Words histograms (section 5.2)
+
+    Maximum
+	2 point
+
+    Evaluation
+	[2 points]  The calculations for the precision values are correct for all queries
+	[1 point]   The calculations for the precision values are correct for some queries
+	[0 points]  The answer is wrong
+
+
+Q8. Bonus 1
+
+	Maximum
+		3 points
+
+	Evaluation
+		[3 points] 	The full system(100%) was correctly implemented
+		[1.5 points]Part of the system (more than 50%) was correctly implemented
+		[0 point] 	The answer is wrong
+
+Q8. Bonus 2
+
+    Maximum
+        3 points
+
+    Evaluation
+        [3 points]  The full system(100%) was correctly implemented
+        [1.5 points]Part of the system (more than 50%) was correctly implemented
+        [0 point]   The answer is wrong
+
+ 
