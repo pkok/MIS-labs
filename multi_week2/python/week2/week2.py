@@ -21,22 +21,27 @@ from pylab import *
 sys.path.insert(0, '../')
 import tools
 
-CACHING = True
+CACHING = False
 RENEW_CACHE = False
 WRITTEN_TO_CACHE = False
+CACHE_PATH = 'cache.pickle'
 
 EMPTY_CACHE = {
-        'match_sift': {},
-        'compute_sift': {},
-        }
+    'match_sift': {},
+    'compute_sift': {},
+}
 
 if CACHING and not RENEW_CACHE:
     try:
-        with open('cache.pickle', 'r') as cache_file:
-            cache = pickle.load(cache_file)
-            for key, value in EMPTY_CACHE.items():
-                if key not in cache:
-                    cache[key] = value
+        with open(CACHE_PATH, 'r') as cache_file:
+            try:
+                cache = pickle.load(cache_file)
+                for key, value in EMPTY_CACHE.items():
+                    if key not in cache:
+                        cache[key] = value
+            except IOError:
+                cache = EMPTY_CACHE
+                os.remove(CACHE_PATH)
     except IOError:
         cache = EMPTY_CACHE
 elif CACHING and RENEW_CACHE:
@@ -59,10 +64,13 @@ def arrayhash(array):
     array.flags.writeable = writeable
     return h
 
+
 ##############################################################################
 ## YOUR IMPLEMENTATIONS
 ##############################################################################
 def match_sift(sift1, sift2, dist_thresh=1.1):
+    global CACHING, WRITTEN_TO_CACHE, RENEW_CACHE
+
     if CACHING:
         h1 = arrayhash(sift1)
         h2 = arrayhash(sift2)
@@ -75,7 +83,7 @@ def match_sift(sift1, sift2, dist_thresh=1.1):
     # FIRST NORMALIZE SIFT VECTORS
     sift1 = tools.normalizeL2(sift1, 0)
     sift2 = tools.normalizeL2(sift2, 0)
-    
+
     # FOR ALL FEATURES IN SIFT1 FIND THE 2 CLOSEST FEATURES IN SIFT2
     # IF SIFT1_i IS MUCH CLOSER TO SIFT2_j1 THAN SIFT2_j2, THEN CONSIDER THIS
     # A MUCH MUCH CLOSER MEANS MORE THAN A PREDEFINED DISTANCE THRESHOLD
@@ -94,7 +102,8 @@ def match_sift(sift1, sift2, dist_thresh=1.1):
             matches[i] = closest_id
         ranked_ratio[i] = closest / float(second_closest)
         matches[i] = closest_id
-    cache['match_sift'][arrayhash(sift1), arrayhash(sift2)] = matches, ranked_ratio
+    cache['match_sift'][arrayhash(sift1), arrayhash(sift2)] \
+        = matches, ranked_ratio
     WRITTEN_TO_CACHE = True
     return matches, ranked_ratio
 
@@ -177,6 +186,8 @@ def plot_features(im, locs, circle=False, color='r'):
 
 
 def compute_sift(impath, edge_thresh=10, peak_thresh=5):
+    global CACHING, WRITTEN_TO_CACHE, RENEW_CACHE
+
     params = ('--edge-thresh '
               + str(edge_thresh)
               + ' --peak-thresh '
@@ -187,7 +198,7 @@ def compute_sift(impath, edge_thresh=10, peak_thresh=5):
     if CACHING and not RENEW_CACHE:
         if im1 in cache['compute_sift']:
             print "retrieving from cache: 'compute_sift'"
-            return cache['compute_sift'][im1]
+            return cache['compute_sift'][hash(im1)]
 
     filpat1, filnam1, filext1 = tools.fileparts(impath)
     temp_im1 = 'tmp_' + filnam1 + '.pgm'
