@@ -30,6 +30,7 @@
 \section{Color-based image segmentation}
 
 \section{$k$-means, SIFT \& Bag-of-Words: calculating storage for raw SIFT}
+Each SIFT vector has 128 elements.  Each element is represented by an integer\footnote{The binary invoked to extract the SIFT vectors returns integers.  However, the \texttt{read\_sift\_from\_file(sift\_path)} function interprets these as Python \texttt{float} objects.  In the standard Python implementation, CPython, a \texttt{float} always consists of 64 bits, which is 8 bytes.  This would result in quadrupling all final answers.}.  Assuming each integer consists of 2 bytes and there is no storage overhead for the vector, 1 SIFT vector needs 256 bytes of storage.  To store all 50,000 vectors that belong to one image, 12,800,000 bytes = $12.8 \cdot 10^6 B = 12.8 \mbox{ MB} \approx 12.21 \mbox{ MiB}$ is needed.  For Facebook's daily addition of new images, one needs $12.8 \cdot 10^6 \cdot 350 \cdot 10^6 \mbox{ B} = 4.48 \cdot 10^{15} \mbox{ B} = 4.48 \mbox{ PB} = 4,480,000,000 \mbox{ MB} = 4272460937.5 \mbox{ MiB} \approx 3.98 \mbox{ PiB}$ of storage.
 
 \section{Visualizing the words on the image, the contents of the words and the Bag-of-Words histograms}
 \todo{see sections 5.1 and 5.2}
