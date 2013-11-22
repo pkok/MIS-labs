@@ -29,8 +29,7 @@ x, labels = week3.generate_2d_data()
 week3.plot_2d_data(x, labels, None, None)
 
 # PART 1. STEP 0. PICK RANDOM CENTERS
-K = 3
-week3.mykmeans(x,K)
+week3.mykmeans(x,3)
 
 # ###~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # # PART 2. COLOR BASED IMAGE SEGMENTATION
