@@ -8,21 +8,52 @@ import os
 from matplotlib import cm
 import matplotlib.colors as cols
 import pickle
-
+import random
 ##############################################################################
 ## YOUR IMPLEMENTATIONS
 ##############################################################################
 
 def mykmeans(x, K):
     max_iter = 20
-    
     # PART 1. STEP 0. PICK RANDOM CENTERS
-    
-    for it in max_iter:
-        # STEP 1. CALCULATE DISTANCE FROM DATA TO CENTERS
-        # STEP 2. FIND WHAT IS THE CLOSEST CENTER PER POINT
-        # STEP 3. UPDATE CENTERS
-        # STEP 3. INCLUDE PERHAPS TERMINATION CRITERIA ????
+    for it in range(max_iter):
+        means = np.array(random.sample(x, K))
+        print means
+        plot_2d_data(x, None, None, means)
+
+        # PART 1. STEP 1. CALCULATE DISTANCE FROM DATA TO CENTERS
+        dist = np.zeros([K, x.shape[0]])
+        for i in np.arange(0, K):
+            for j in np.arange(0, x.shape[0]):
+                dist[i, j] = math.sqrt((means[i][0] - x[j][0])*(means[i][0] - x[j][0]) + (means[i][1] - x[j][1])*(means[i][1] - x[j][1])) # COMPUT EUCLIDEAN DISTANCE
+
+        print dist
+
+        # # PART 1. STEP 2. FIND WHAT IS THE CLOSEST CENTER PER POINT
+        closest = np.zeros(x.shape[0])
+        for j in np.arange(0, x.shape[0]):
+            argmin = -1
+            minDis = float("inf")
+            for i in np.arange(0, K):
+                if dist[i,j] < minDis:
+                    minDis = dist[i,j]
+                    argmin = i
+            closest[j] = argmin
+
+        plot_2d_data(x, None, closest, means)
+
+        # # PART 1. STEP 3. UPDATE CENTERS
+        for i in np.arange(0, K):
+            center_x = 0;
+            center_y = 0;
+            num = 0
+            for j in np.arange(0, x.shape[0]):
+                if closest[j] == i:
+                    center_x += x[j][0]
+                    center_y += x[j][1]
+                    num += 1
+            means[i,:] = [center_x/num, center_y/num]
+        plot_2d_data(x, None, closest, means)
     
     # ...
     return codebook
@@ -101,6 +132,7 @@ def plot_2d_data(x, labels, assignments, centers):
         for i, c in zip(set(assignments), colors):
             i = int(i)
             plot(x[assignments == i, 0], x[assignments == i, 1], 'o', markeredgecolor=c, markersize=12, markerfacecolor='none', markeredgewidth=2)
+    show()
 
 def get_colors(K):
     colors = np.random.rand(K, 3)
