@@ -46,28 +46,31 @@ week3.mykmeans(x, 3)
 
 time.strftime("[%H:%M:%S] Computing part 2")
 im = Image.open('../../data/coral.jpg')
-imshow(im)
+plt.imshow(im)
 im = np.array(im)
 im_flat = np.reshape(im, [im.shape[0] * im.shape[1], im.shape[2]])
 
-N = 10000
+N = 1000
 im_flat_random = np.array(random.sample(im_flat, N))
 
 K = 10
-[codebook, dummy] = cluster.kmeans(... # RUN SCIPY KMEANS
-[indexes, dummy] = cluster.vq(...      # VECTOR QUANTIZE PIXELS TO COLOR CENTERS
+[codebook, dummy] = cluster.kmeans(im_flat, K, iter = 100)  # RUN SCIPY KMEANS
+[indexes, dummy] = cluster.vq(im_flat,  codebook)    # VECTOR QUANTIZE PIXELS TO COLOR CENTERS
 
 im_vq = codebook[indexes]
 im_vq = np.reshape(im_vq, (im.shape))
 im_vq = Image.fromarray(im_vq, 'RGB')
 
-figure
-subplot(1, 2, 1)
-imshow(im)
-subplot(1, 2, 2)
-imshow(im_vq)
-title('K=' + str(K))
+#figure
+plt.subplot(1, 2, 1)
+plt.imshow(im)
+plt.subplot(1, 2, 2)
+plt.imshow(im_vq)
+plt.title('K=' + str(K))
+
+plt.show()
 """
+
 
 """
 ###~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -152,13 +155,13 @@ for image in patch_count:
 # PART 5. STEP 2. COMPUTE DISTANCE MATRIX
 
 # PART 5. STEP 3. PERFORM RANKING SIMILAR TO WEEK 1 & 2 WITH QUERIES 'all_souls_000065.jpg', 'all_souls_0000XX.jpg', 'all_souls_0000XX.jpg'
-query_id = ...
-ranking = ...
+# query_id = ...
+# ranking = ...
 
-# PART 5. STEP 4. COMPUTE THE PRECISION@5
-files, labels, label_names = week3.get_oxford_filedata()
-# ...
-prec5 = week3.precision_at_N(0, gt_labels, ranking, 5)
+# # PART 5. STEP 4. COMPUTE THE PRECISION@5
+# files, labels, label_names = week3.get_oxford_filedata()
+# # ...
+# prec5 = week3.precision_at_N(0, gt_labels, ranking, 5)
 
 # PART 5. STEP 4. IMPLEMENT & COMPUTE AVERAGE PRECISION
 
