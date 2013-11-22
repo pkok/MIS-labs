@@ -15,19 +15,15 @@ import random
 
 def mykmeans(x, K):
     max_iter = 20
+    means = np.array(random.sample(x, K))
+    plot_2d_data(x, None, None, means)
     # PART 1. STEP 0. PICK RANDOM CENTERS
     for it in range(max_iter):
-        means = np.array(random.sample(x, K))
-        print means
-        plot_2d_data(x, None, None, means)
-
         # PART 1. STEP 1. CALCULATE DISTANCE FROM DATA TO CENTERS
         dist = np.zeros([K, x.shape[0]])
         for i in np.arange(0, K):
             for j in np.arange(0, x.shape[0]):
                 dist[i, j] = math.sqrt((means[i][0] - x[j][0])*(means[i][0] - x[j][0]) + (means[i][1] - x[j][1])*(means[i][1] - x[j][1])) # COMPUT EUCLIDEAN DISTANCE
-
-        print dist
 
         # # PART 1. STEP 2. FIND WHAT IS THE CLOSEST CENTER PER POINT
         closest = np.zeros(x.shape[0])
@@ -43,6 +39,7 @@ def mykmeans(x, K):
         plot_2d_data(x, None, closest, means)
 
         # # PART 1. STEP 3. UPDATE CENTERS
+        max_change = 0.0;
         for i in np.arange(0, K):
             center_x = 0;
             center_y = 0;
@@ -52,11 +49,20 @@ def mykmeans(x, K):
                     center_x += x[j][0]
                     center_y += x[j][1]
                     num += 1
-            means[i,:] = [center_x/num, center_y/num]
+            new_center_x = center_x/num
+            new_center_y = center_y/num
+            new_center_dist = math.sqrt(math.pow(new_center_x - means[i, 0], 2) + math.pow(new_center_y - means[i, 1], 2))
+            if new_center_dist > max_change:
+                max_change = new_center_dist
+            means[i,:] = [new_center_x, new_center_y]
         plot_2d_data(x, None, closest, means)
-    
-    # ...
-    return codebook
+
+        if max_change < 0.001:
+            print "Exit on iteration: ", it
+            break
+        else:
+            print max_change    
+    return
     
 
 ##############################################################################
