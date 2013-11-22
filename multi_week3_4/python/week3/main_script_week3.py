@@ -15,10 +15,13 @@ import math
 import random
 import sys
 import os
-import week3
 
+import week3
 sys.path.insert(0, '../')
 import tools
+
+# Went to Random.org to determine seed from uniform interval [0, 99]
+random.seed(26)
 
 ###~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # PART 1. KMEANS
@@ -31,86 +34,100 @@ week3.plot_2d_data(x, labels, None, None)
 # PART 1. STEP 0. PICK RANDOM CENTERS
 week3.mykmeans(x,3)
 
-# ###~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# # PART 2. COLOR BASED IMAGE SEGMENTATION
+"""
+###~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# PART 2. COLOR BASED IMAGE SEGMENTATION
 
-# im = Image.open('../../data/coral.jpg')
-# imshow(im)
-# im = np.array(im)
-# im_flat = np.reshape(im, [im.shape[0] * im.shape[1], im.shape[2]])
+im = Image.open('../../data/coral.jpg')
+imshow(im)
+im = np.array(im)
+im_flat = np.reshape(im, [im.shape[0] * im.shape[1], im.shape[2]])
 
-# N = 10000
-# im_flat_random = np.array(random.sample(im_flat, N))
+N = 10000
+im_flat_random = np.array(random.sample(im_flat, N))
 
-# K = 10
-# [codebook, dummy] = cluster.kmeans(... # RUN SCIPY KMEANS
-# [indexes, dummy] = cluster.vq(...      # VECTOR QUANTIZE PIXELS TO COLOR CENTERS
+K = 10
+[codebook, dummy] = cluster.kmeans(... # RUN SCIPY KMEANS
+[indexes, dummy] = cluster.vq(...      # VECTOR QUANTIZE PIXELS TO COLOR CENTERS
 
-# im_vq = codebook[indexes]
-# im_vq = np.reshape(im_vq, (im.shape))
-# im_vq = Image.fromarray(im_vq, 'RGB')
+im_vq = codebook[indexes]
+im_vq = np.reshape(im_vq, (im.shape))
+im_vq = Image.fromarray(im_vq, 'RGB')
 
-# figure
-# subplot(1, 2, 1)
-# imshow(im)
-# subplot(1, 2, 2)
-# imshow(im_vq)
-# title('K=' + str(K))
+figure
+subplot(1, 2, 1)
+imshow(im)
+subplot(1, 2, 2)
+imshow(im_vq)
+title('K=' + str(K))
+"""
 
-# ###~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# # PART 3. k-MEANS AND BAG-OF-WORDS
+###~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# PART 3. k-MEANS AND BAG-OF-WORDS
+codebook = week3.load_codebook('../../data/codebook_100.pkl')
+K = codebook.shape[0]
+colors = week3.get_colors(K)
 
-# codebook = week3.load_codebook('../../data/codebook_100.pkl')
-# K = codebook.shape[0]
-# colors = week3.get_colors(K)
+files = os.listdir('../../data/oxford_scaled/')
 
-# files = os.listdir('../../data/oxford_scaled/')
+# PART 3. STEP 1. VISUALIZE WORDS ON IMAGES
+word_patches = defaultdict(list)
+files_random = random.sample(files, 5)
 
-# # PART 3. STEP 1. VISUALIZE WORDS ON IMAGES
-# word_patches = defaultdict(list)
-# files_random = random.sample(files, 5)
+imfolder = '../../data/oxford_scaled/'
+files = random.sample(os.listdir(imfolder), 5)
+impaths = [imfolder + f for f in files]
+for impath in impaths:
+    frames, sift = week3.compute_sift(impath)      # COMPUTE SIFT
+    [indexes, dummy] = cluster.vq(sift, codebook)  # VECTOR QUANTIZE SIFT TO WORDS
 
-# f = 'all_souls_000057.jpg'
-# impath = '../../data/oxford_scaled/' + f
-# frames, sift = ...                              # COMPUTE SIFT
-# [indexes, dummy] = ...                          # VECTOR QUANTIZE SIFT TO WORDS
+    # VISUALIZE WORDS
+    word_patches = week3.show_words_on_image(impath,
+                                             K,
+                                             frames,
+                                             sift,
+                                             indexes,
+                                             colors,
+                                             word_patches)
 
-# word_patches = week3.show_words_on_image(...    # VISUALIZE WORDS
-    
-# # PART 3. STEP 2. PLOT COLORBAR
-# week3.get_colorbar(colors)
+# PART 3. STEP 2. PLOT COLORBAR
+week3.get_colorbar(colors)
 
-# # PART 3. STEP 3. PLOT WORD CONTENTS
-# k = 0
-# WN = len(word_patches[k])
-# figure()
-# suptitle('Word ' + str(k))
-# for i in range(WN):
-#     subplot(int(math.ceil(sqrt(WN))), int(math.ceil(sqrt(WN))), i+1)
-#     imshow(Image.fromarray(word_patches[k][i], 'RGB'))
-#     axis('off')
+# PART 3. STEP 3. PLOT WORD CONTENTS
+for k in random.sample(range(len(word_patches)), 5):
+    WN = len(word_patches[k])
+    plt.figure()
+    plt.suptitle('Word ' + str(k))
 
-# # PART 4. BAG-OF-WORDS IMAGE REPRESENTATION
-# # USE THE np.bincount COUNTING THE INDEXES TO COMPUTE THE BAG-OF-WORDS REPRESENTATION,
-
-# ###~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# # PART 5. PERFORM RETRIEVAL WITH THE BAG-OF-WORDS MODEL
-
-# # PART 5. STEP 1. LOAD BAG-OF-WORDS VECTORS FROM ../../data/bow/codebook_100/ using the week3.load_bow function
-
-# # PART 5. STEP 2. COMPUTE DISTANCE MATRIX
-
-# # PART 5. STEP 3. PERFORM RANKING SIMILAR TO WEEK 1 & 2 WITH QUERIES 'all_souls_000065.jpg', 'all_souls_0000XX.jpg', 'all_souls_0000XX.jpg'
-# query_id = ...
-# ranking = ...
-
-# # PART 5. STEP 4. COMPUTE THE PRECISION@5
-# files, labels, label_names = week3.get_oxford_filedata()
-# # ...
-# prec5 = week3.precision_at_N(0, gt_labels, ranking, 5)
-
-# # PART 5. STEP 4. IMPLEMENT & COMPUTE AVERAGE PRECISION
+    for i in range(WN):
+        plt.subplot(int(math.ceil(np.sqrt(WN))),
+                    int(math.ceil(np.sqrt(WN))),
+                    i + 1)
+        word_patch = word_patches[k][i].copy()
+        plt.imshow(Image.fromarray(word_patch, 'RGB'))
+        plt.axis('off')
 
 
+"""
+# PART 4. BAG-OF-WORDS IMAGE REPRESENTATION
+# USE THE np.bincount COUNTING THE INDEXES TO COMPUTE THE BAG-OF-WORDS REPRESENTATION,
 
+###~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# PART 5. PERFORM RETRIEVAL WITH THE BAG-OF-WORDS MODEL
 
+# PART 5. STEP 1. LOAD BAG-OF-WORDS VECTORS FROM ../../data/bow/codebook_100/ using the week3.load_bow function
+
+# PART 5. STEP 2. COMPUTE DISTANCE MATRIX
+
+# PART 5. STEP 3. PERFORM RANKING SIMILAR TO WEEK 1 & 2 WITH QUERIES 'all_souls_000065.jpg', 'all_souls_0000XX.jpg', 'all_souls_0000XX.jpg'
+query_id = ...
+ranking = ...
+
+# PART 5. STEP 4. COMPUTE THE PRECISION@5
+files, labels, label_names = week3.get_oxford_filedata()
+# ...
+prec5 = week3.precision_at_N(0, gt_labels, ranking, 5)
+
+# PART 5. STEP 4. IMPLEMENT & COMPUTE AVERAGE PRECISION
+
+"""
