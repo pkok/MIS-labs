@@ -27,7 +27,7 @@ random.seed(26)
 """
 ###~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # PART 1. KMEANS
-time.strftime("[%H:%M:%S] Computing part 1")
+print time.strftime("[%H:%M:%S] Computing part 1")
 
 # GENERATE RANDOM DATA
 x, labels = week3.generate_2d_data()
@@ -36,7 +36,7 @@ week3.plot_2d_data(x, labels, None, None)
 plt.show()
 
 # PART 1. STEP 0. PICK RANDOM CENTERS
-time.strftime("[%H:%M:%S] Computing part 1, step 0")
+print time.strftime("[%H:%M:%S] Computing part 1, step 0")
 week3.mykmeans(x, 3)
 """
 
@@ -44,7 +44,7 @@ week3.mykmeans(x, 3)
 ###~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # PART 2. COLOR BASED IMAGE SEGMENTATION
 
-time.strftime("[%H:%M:%S] Computing part 2")
+print time.strftime("[%H:%M:%S] Computing part 2")
 im = Image.open('../../data/coral.jpg')
 plt.imshow(im)
 im = np.array(im)
@@ -75,7 +75,9 @@ plt.show()
 """
 ###~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # PART 3. k-MEANS AND BAG-OF-WORDS
-time.strftime("[%H:%M:%S] Computing part 3")
+# Went to Random.org to determine seed from uniform interval [0, 99]
+random.seed(17)
+print time.strftime("[%H:%M:%S] Computing part 3")
 codebook = week3.load_codebook('../../data/codebook_100.pkl')
 K = codebook.shape[0]
 colors = week3.get_colors(K)
@@ -83,14 +85,14 @@ colors = week3.get_colors(K)
 files = os.listdir('../../data/oxford_scaled/')
 
 # PART 3. STEP 1. VISUALIZE WORDS ON IMAGES
-time.strftime("[%H:%M:%S] Computing part 3, step 1")
+print time.strftime("[%H:%M:%S] Computing part 3, step 1")
 word_patches = defaultdict(list)
 patch_count = defaultdict(lambda: defaultdict(list))
 files_random = random.sample(files, 5)
+print 'Random files: %s' % files_random
 
 imfolder = '../../data/oxford_scaled/'
-files = random.sample(os.listdir(imfolder), 5)
-impaths = [imfolder + f for f in files]
+impaths = [imfolder + f for f in files_random]
 for impath in impaths:
     frames, sift = week3.compute_sift(impath)      # COMPUTE SIFT
     [indexes, dummy] = cluster.vq(sift, codebook)  # VECTOR QUANTIZE SIFT TO WORDS
@@ -109,11 +111,11 @@ for impath in impaths:
         patch_count[impath][key] = len(patch_count[impath][key])
 
 # PART 3. STEP 2. PLOT COLORBAR
-time.strftime("[%H:%M:%S] Computing part 3, step 2")
+print time.strftime("[%H:%M:%S] Computing part 3, step 2")
 week3.get_colorbar(colors)
 
 # PART 3. STEP 3. PLOT WORD CONTENTS
-time.strftime("[%H:%M:%S] Computing part 3, step 3")
+print time.strftime("[%H:%M:%S] Computing part 3, step 3")
 for k in random.sample(range(len(word_patches)), 5):
     WN = len(word_patches[k])
     plt.figure()
@@ -126,11 +128,12 @@ for k in random.sample(range(len(word_patches)), 5):
         word_patch = word_patches[k][i].copy()
         plt.imshow(Image.fromarray(word_patch, 'RGB'))
         plt.axis('off')
+"""
 
-
+"""
 # PART 4. BAG-OF-WORDS IMAGE REPRESENTATION
 # USE THE np.bincount COUNTING THE INDEXES TO COMPUTE THE BAG-OF-WORDS REPRESENTATION,
-time.strftime("[%H:%M:%S] Computing part 4")
+print time.strftime("[%H:%M:%S] Computing part 4")
 for image in patch_count:
     max_key = max(patch_count[image])
     histogram = [patch_count[image][i] for i in range(max_key + 1)]
