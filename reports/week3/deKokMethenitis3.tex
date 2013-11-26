@@ -35,8 +35,6 @@
 Each SIFT vector has 128 elements.  Each element is represented by an integer\footnote{The binary invoked to extract the SIFT vectors returns integers.  However, the \texttt{read\_sift\_from\_file(sift\_path)} function interprets these as Python \texttt{float} objects.  In the standard Python implementation, CPython, a \texttt{float} always consists of 64 bits, which is 8 bytes.  This would result in quadrupling all final answers.}.  Assuming each integer consists of 2 bytes and there is no storage overhead for the vector, 1 SIFT vector needs 256 bytes of storage.  To store all 50,000 vectors that belong to one image, 12,800,000 bytes = $12.8 \cdot 10^6 B = 12.8 \mbox{ MB} \approx 12.21 \mbox{ MiB}$ is needed.  For Facebook's daily addition of new images, one needs $12.8 \cdot 10^6 \cdot 350 \cdot 10^6 \mbox{ B} = 4.48 \cdot 10^{15} \mbox{ B} = 4.48 \mbox{ PB} = 4,480,000,000 \mbox{ MB} = 4272460937.5 \mbox{ MiB} \approx 3.98 \mbox{ PiB}$ of storage.
 
 \section{Visualizing the words on the image, the contents of the words and the Bag-of-Words histograms}
-\todo{see sections 5.1 and 5.2}
-
 Visual words of five randomly selected images from the dataset have been plotted in Figure~\ref{fig:wordsonimage}.  Note that words tend to be focused on structures that reoccur often, such as lines.  This can be seen in Figure~\ref{sfig:cc85} and~\ref{sfig:as1} at the roof, and in Figure~\ref{sfig:as15} and~\ref{sfig:rc437} at the 3D structures on the wall.
 
 \begin{figure}
@@ -123,29 +121,67 @@ Finally, the bag-of-words-histogram representation of the images of Figure~\ref{
   \begin{subfigure}{0.49\textwidth}
     \centering
     \includegraphics[width=\textwidth,height=.3\textheight,keepaspectratio]{histogram2}
-    \caption{\texttt{all\_souls\_000001png}}
+    \caption{\texttt{all\_souls\_000001.png}}
   \end{subfigure}
   \begin{subfigure}{0.49\textwidth}
     \centering
     \includegraphics[width=\textwidth,height=.3\textheight,keepaspectratio]{histogram3}
-    \caption{\texttt{all\_souls\_000015png}}
+    \caption{\texttt{all\_souls\_000015.png}}
   \end{subfigure}
   \begin{subfigure}{0.49\textwidth}
     \centering
     \includegraphics[width=\textwidth,height=.3\textheight,keepaspectratio]{histogram4}
-    \caption{\texttt{christ\_church\_000275png}}
+    \caption{\texttt{christ\_church\_000275.png}}
   \end{subfigure}
   \begin{subfigure}{0.49\textwidth}
     \centering
     \includegraphics[width=\textwidth,height=.3\textheight,keepaspectratio]{histogram5}
-    \caption{\texttt{radcliffe\_camera\_000437png}}
+    \caption{\texttt{radcliffe\_camera\_000437.png}}
   \end{subfigure}
   \caption{Frequencies of visual words per image.  Each bar is visualised in the corresponding SIFT vector color.  Figure~\ref{sfig:colorbar} shows these colors.}
   \label{fig:histograms}
 \end{figure}
 
 \section{Visualizing Bag-of-Words retrieval}
-\todo{see section 6}
+See Figure~\ref{fig:bow_retrieval} for the ranking.
+
+\begin{figure}
+  \begin{subfigure}{0.47\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{ranking_h_6.png}
+    \caption{Histogram distance, \texttt{all\_souls\_000006.png}}
+  \end{subfigure}
+  \hspace*{\fill}
+  \begin{subfigure}{0.47\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{ranking_l_6.png}
+    \caption{$\ell_2$ distance, \texttt{all\_souls\_000006.png}}
+  \end{subfigure}
+  \begin{subfigure}{0.47\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{ranking_h_65.png}
+    \caption{Histogram distance, \texttt{all\_souls\_000065.png}}
+  \end{subfigure}
+  \hspace*{\fill}
+  \begin{subfigure}{0.47\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{ranking_l_65.png}
+    \caption{$\ell_2$ distance, \texttt{all\_souls\_000065.png}}
+  \end{subfigure}
+  \begin{subfigure}{0.47\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{ranking_h_75.png}
+    \caption{Histogram distance, \texttt{all\_souls\_000075.png}}
+  \end{subfigure}
+  \hspace*{\fill}
+  \begin{subfigure}{0.47\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{ranking_l_75.png}
+    \caption{$\ell_2$ distance, \texttt{all\_souls\_000075.png}}
+  \end{subfigure}
+  \caption{Ranking of retrieved images based on different distance measures between histograms of bags of words.}
+  \label{fig:bow_retrieval}
+\end{figure}
 
 \section{Evaluating Bag-of-Words histograms}
 \todo{see section 5.2}
