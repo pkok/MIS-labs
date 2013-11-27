@@ -14,9 +14,70 @@ sys.path.insert(0, '../')
 import tools
 
 
+DISTANCE_L2 = {'name': 'l2',
+               'fn': lambda x, y: float(x * y),
+               'norm': tools.normalizeL2}
+DISTANCE_HIST = {'name': 'histogram',
+                 'fn': min,
+                 'norm': tools.normalizeL1}
+DISTANCE_MEASURES = [DISTANCE_L2, DISTANCE_HIST]
+
+
 ##############################################################################
 ## YOUR IMPLEMENTATIONS
 ##############################################################################
+# Modified from week 1 to work with dicts and non-sequential numeric keys
+# as well as lists.
+def rank_images(imdists, query):
+    query_dists = imdists[query]
+    if hasattr(query_dists, 'keys'):
+        to_sort = query_dists.keys()
+    else:
+        to_sort = range(len(query_dists))
+    return sorted(to_sort,
+                  key=lambda x: query_dists[x],
+                  reverse=True)
+
+
+def bow_histograms(bow_folder, dist_measures=DISTANCE_MEASURES):
+    normalized_bows = {}
+    for dist_measure in dist_measures:
+        if dist_measure['norm'] not in normalized_bows:
+            normalized_bows[dist_measure['norm']] = {}
+    for f in os.listdir(bow_folder):
+        bow = load_bow(bow_folder + f)
+        key = f[:f.rfind('.')]
+        for dist_measure in normalized_bows:
+            normalized_bows[dist_measure][key] = dist_measure(bow)
+    return normalized_bows
+
+
+def distance_matrices(normalized_bows, distance_measures=DISTANCE_MEASURES):
+    dist_matrices = {}
+    template_tmp = {}
+    for d in distance_measures:
+        dist_matrices[d['name']] = {}
+        template_tmp[d['name']] = {}
+
+    keys = normalized_bows[distance_measures[0]['norm']].keys()
+    for i, from_key in enumerate(keys):
+        tmp = template_tmp.copy()
+        for j, to_key in enumerate(keys):
+            for d in distance_measures:
+                tmp[d['name']][to_key] =\
+                    sum(map(d['fn'],
+                        normalized_bows[d['norm']][from_key],
+                        normalized_bows[d['norm']][to_key]))
+        for name in tmp:
+            dist_matrices[name][from_key] = tmp[name].copy()
+    return dist_matrices
+
+
+def custom_precision_at_N(query, indexed_labels, ranking, N):
+    label_q = indexed_labels[query]
+    labels_N = [indexed_labels[fn] for fn in ranking[:N]]
+    return sum(map(lambda l: l == label_q, labels_N)) / float(N)
+
 
 def mykmeans(x, K):
     max_iter = 20
@@ -65,7 +126,7 @@ def mykmeans(x, K):
             print "Exit on iteration: ", it
             break
         else:
-            print max_change    
+            print max_change
     return
 
 ##############################################################################

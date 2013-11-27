@@ -156,80 +156,121 @@ print time.strftime("[%H:%M:%S] Computing part 5")
 
 # PART 5. STEP 1. LOAD BAG-OF-WORDS VECTORS FROM ../../data/bow/codebook_100/ using the week3.load_bow function
 print time.strftime("[%H:%M:%S] Computing part 5, part 1")
-BOW_FOLDER = '../../data/bow/codebook_100/'
-bows_l1 = {}
-bows_l2 = {}
-for f in os.listdir(BOW_FOLDER):
-    bow = week3.load_bow(BOW_FOLDER + f)
-    bows_l1[f[:f.find('.')]] = tools.normalizeL1(bow)
-    bows_l2[f[:f.find('.')]] = tools.normalizeL2(bow)
+DISTANCE_L2 = {'name': 'l2',
+               'fn': lambda x, y: float(x * y),
+               'norm': tools.normalizeL2}
+DISTANCE_HIST = {'name': 'histogram',
+                 'fn': min,
+                 'norm': tools.normalizeL1}
+DISTANCE_MEASURES = [DISTANCE_L2, DISTANCE_HIST]
+BOW_SIZES = (10, 50, 100, 500, 1000)
+BOW_FOLDER = "../../data/bow/codebook_%d/"
+normalized_bows = {}
+for bow_size in BOW_SIZES:
+    normalized_bows[bow_size] = week3.bow_histograms(BOW_FOLDER % bow_size,
+                                                     DISTANCE_MEASURES)
 
 # PART 5. STEP 2. COMPUTE DISTANCE MATRIX
 print time.strftime("[%H:%M:%S] Computing part 5, part 2")
-dist_hist = {}
-dist_l2 = {}
-d_l2 = lambda x, y: float(x * y)
-for f1 in bows_l1:
-    tmp_l1 = {}
-    tmp_l2 = {}
-    bow_l1_f1 = bows_l1[f1]
-    bow_l2_f1 = bows_l2[f1]
-    for f2 in bows_l1:
-        tmp_l1[f2] = sum(map(min, bow_l1_f1, bows_l1[f2]))
-        tmp_l2[f2] = sum(map(d_l2, bow_l2_f1, bows_l2[f2]))
-    dist_hist[f1] = tmp_l1
-    dist_l2[f1] = tmp_l2
-
+dist_matrices = {}
+for bow_size, normalized_bow in normalized_bows.items():
+    dist_matrices[bow_size] = week3.distance_matrices(normalized_bow,
+                                                      DISTANCE_MEASURES)
+dist_hist = dist_matrices[100]['histogram']
+dist_l2 = dist_matrices[100]['l2']
 
 # PART 5. STEP 3. PERFORM RANKING SIMILAR TO WEEK 1 & 2 WITH QUERIES 'all_souls_000065.jpg', 'all_souls_0000XX.jpg', 'all_souls_0000XX.jpg'
 print time.strftime("[%H:%M:%S] Computing part 5, part 3")
-def rankImages(imdists, query_id):
-    return sorted(imdists[query_id].keys(),
-                  key=lambda x: imdists[query_id][x],
-                  reverse=True)
-
 
 ranking_hist = {}
 ranking_l2 = {}
+QUERIES = (
+    'all_souls_000006.jpg',
+    'all_souls_000065.jpg',
+    'all_souls_000075.jpg'
+)
+AVERAGE_PRECISION = ''
+QUERY_PLOT_SYMBOLS = dict(zip(QUERIES, ('ro', 'gs', 'b^')))
+QUERY_PLOT_SYMBOLS[AVERAGE_PRECISION] = 'k+'
+
+ranking = {}
+for query in QUERIES:
+    ranking[query] = {}
+    for bow_size in BOW_SIZES:
+        ranking[query][bow_size] = {}
+        for dist_measure in dist_matrices[bow_size]:
+            ranking[query][bow_size][dist_measure] =\
+                week3.rank_images(dist_matrices[bow_size][dist_measure], query)
+
 
 IMG_FOLDER = '../../data/oxford_scaled/'
-for query_id in ['all_souls_000006', 'all_souls_000065', 'all_souls_000075']:
-    ranking_hist[query_id] = rankImages(dist_hist, query_id)
-    ranking_l2[query_id] = rankImages(dist_l2, query_id)
-    im = plt.imread(IMG_FOLDER + query_id + '.jpg')
+for query in QUERIES:
+    ranking_hist[query] = ranking[query][100]['histogram']
+    ranking_l2[query] = ranking[query][100]['l2']
+    im = plt.imread(IMG_FOLDER + query)
     figure_h = plt.figure()
     figure_h.suptitle("Ranking images based on histogram distance")
     ax_h = figure_h.add_subplot(2, 3, 1)
     ax_h.imshow(im)
     ax_h.axis('off')
-    ax_h.set_title('Query image')
+    ax_h.set_title("Query image")
     figure_l = plt.figure()
     figure_l.suptitle("Ranking images based on L2 distance")
     ax_l = figure_l.add_subplot(2, 3, 1)
     ax_l.imshow(im)
     ax_l.axis('off')
-    ax_l.set_title('Query image')
+    ax_l.set_title("Query image")
 
     for i in range(5):
-        im = plt.imread(IMG_FOLDER + ranking_hist[query_id][i] + '.jpg')
+        im = plt.imread(IMG_FOLDER + ranking_hist[query][i])
         ax = figure_h.add_subplot(2, 3, i + 2)
         ax.imshow(im)
         ax.axis('off')
-        ax.set_title(ranking_hist[query_id][i])
+        ax.set_title(ranking_hist[query][i])
 
-        im = plt.imread(IMG_FOLDER + ranking_l2[query_id][i] + '.jpg')
+        im = plt.imread(IMG_FOLDER + ranking_l2[query][i])
         ax = figure_l.add_subplot(2, 3, i + 2)
         ax.imshow(im)
         ax.axis('off')
-        ax.set_title(ranking_l2[query_id][i])
+        ax.set_title(ranking_l2[query][i])
 
-plt.show()
 
-# # PART 5. STEP 4. COMPUTE THE PRECISION@5
-# print time.strftime("[%H:%M:%S] Computing part 5, part 4")
-# files, labels, label_names = week3.get_oxford_filedata()
-# # ...
-# prec5 = week3.precision_at_N(0, gt_labels, ranking, 5)
+# PART 5. STEP 4. COMPUTE THE PRECISION@5
+print time.strftime("[%H:%M:%S] Computing part 5, part 4")
+files, labels, label_names = week3.get_oxford_filedata()
+indexed_labels = dict(zip(files, labels))
+precision = {}
+PRECISION_LIMITS = (5, 10)
+for n in PRECISION_LIMITS:
+    precision[n] = {}
+    for d_ in DISTANCE_MEASURES:
+        d = d_['name']
+        precision[n][d] = {}
+        fig = plt.figure()
+        fig.suptitle("Precision@%d with %s measure" % (n, d))
+        precision[n][d][AVERAGE_PRECISION] = {}
+        for s in BOW_SIZES:
+            precision[n][d][AVERAGE_PRECISION][s] = 0.
+        for q in QUERIES:
+            precision[n][d][q] = {}
+            for s in BOW_SIZES:
+                precision[n][d][q][s] =\
+                    week3.custom_precision_at_N(q,
+                                                indexed_labels,
+                                                ranking[q][s][d],
+                                                n)
+                precision[n][d][AVERAGE_PRECISION][s] +=\
+                    precision[n][d][q][s]
+            plot_values = zip(*precision[n][d][q].items())
+            plt.plot(plot_values[0], plot_values[1],
+                     QUERY_PLOT_SYMBOLS[q], label=q)
+        for s in precision[n][d][AVERAGE_PRECISION]:
+            precision[n][d][AVERAGE_PRECISION][s] /= len(QUERIES)
+        plot_values = zip(*precision[n][d][AVERAGE_PRECISION].items())
+        plt.plot(plot_values[0], plot_values[1],
+                 QUERY_PLOT_SYMBOLS[AVERAGE_PRECISION], label='average')
+        plt.legend(numpoints=1)
 
 # PART 5. STEP 4. IMPLEMENT & COMPUTE AVERAGE PRECISION
 print time.strftime("[%H:%M:%S] Done.")
+plt.show()
