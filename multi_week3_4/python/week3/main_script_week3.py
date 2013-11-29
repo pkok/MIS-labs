@@ -17,6 +17,7 @@ import sys
 import os
 import time
 
+import week1
 import week3
 sys.path.insert(0, '../')
 import tools
@@ -191,7 +192,7 @@ QUERIES = (
 )
 AVERAGE_PRECISION = ''
 QUERY_PLOT_SYMBOLS = dict(zip(QUERIES, ('ro', 'gs', 'b^')))
-QUERY_PLOT_SYMBOLS[AVERAGE_PRECISION] = 'k+'
+QUERY_PLOT_SYMBOLS[AVERAGE_PRECISION] = 'kx'
 
 ranking = {}
 for query in QUERIES:
@@ -236,11 +237,13 @@ for query in QUERIES:
 
 
 # PART 5. STEP 4. COMPUTE THE PRECISION@5
-print time.strftime("[%H:%M:%S] Computing part 5, part 4")
+# PART 5. STEP 4. IMPLEMENT & COMPUTE AVERAGE PRECISION
+print time.strftime("[%H:%M:%S] Computing part 5, step 4 and 5")
 files, labels, label_names = week3.get_oxford_filedata()
 indexed_labels = dict(zip(files, labels))
 precision = {}
 PRECISION_LIMITS = (5, 10)
+
 for n in PRECISION_LIMITS:
     precision[n] = {}
     for d_ in DISTANCE_MEASURES:
@@ -248,6 +251,9 @@ for n in PRECISION_LIMITS:
         precision[n][d] = {}
         fig = plt.figure()
         fig.suptitle("Precision@%d with %s measure" % (n, d))
+        ax = plt.axes()
+        ax.set_ylabel("Precision")
+        ax.set_xlabel("Dimensionality of the bag of words")
         precision[n][d][AVERAGE_PRECISION] = {}
         for s in BOW_SIZES:
             precision[n][d][AVERAGE_PRECISION][s] = 0.
@@ -261,16 +267,49 @@ for n in PRECISION_LIMITS:
                                                 n)
                 precision[n][d][AVERAGE_PRECISION][s] +=\
                     precision[n][d][q][s]
-            plot_values = zip(*precision[n][d][q].items())
-            plt.plot(plot_values[0], plot_values[1],
+            values = precision[n][d][q].values()
+            enumeration = range(len(values))
+            plt.plot(enumeration, values,
                      QUERY_PLOT_SYMBOLS[q], label=q)
+            plt.plot(enumeration, values,
+                     QUERY_PLOT_SYMBOLS[q][0] + '--', label=None)
         for s in precision[n][d][AVERAGE_PRECISION]:
             precision[n][d][AVERAGE_PRECISION][s] /= len(QUERIES)
-        plot_values = zip(*precision[n][d][AVERAGE_PRECISION].items())
-        plt.plot(plot_values[0], plot_values[1],
+        values = precision[n][d][AVERAGE_PRECISION].values()
+        enumeration = range(len(values))
+        plt.plot(enumeration, values,
                  QUERY_PLOT_SYMBOLS[AVERAGE_PRECISION], label='average')
+        plt.plot(enumeration, values,
+                 QUERY_PLOT_SYMBOLS[AVERAGE_PRECISION][0] + '--', label=None)
+        enumeration = [enumeration[0] - 0.5]\
+            + enumeration\
+            + [enumeration[-1] + 0.5]
+        ax.set_xticks(range(len(values)))
+        ax.set_xticklabels(map(str, BOW_SIZES))
         plt.legend(numpoints=1)
+        plt.show()
 
-# PART 5. STEP 4. IMPLEMENT & COMPUTE AVERAGE PRECISION
+# PART 5. STEP 6. COMPUTE THE PRECISION@{5,10} FOR HISTOGRAM BASED RETRIEVAL
+# Generate histogram for each image in the dataset
+print time.strftime("[%H:%M:%S] Computing part 5, step 6")
+
+getHistogram = lambda x: week1.extractColorHistogram(np.array(plt.imread(x)))
+histograms = {d['norm']: {filename: getHistogram(IMG_FOLDER + filename)
+                          for filename in os.listdir(IMG_FOLDER)}
+              for d in DISTANCE_MEASURES}
+color_dist_matrices = week3.distance_matrices(histograms, DISTANCE_MEASURES)
+
+color_ranking = {}
+for q in QUERIES:
+    for d in color_dist_matrices:
+        r = week3.rank_images(color_dist_matrices[d], q)
+        for n in PRECISION_LIMITS:
+            p = week3.custom_precision_at_N(q, indexed_labels, r, n)
+            print "Precision@%d with %s measure for %s's color histograms: %f"\
+                % (n, d, q, p)
+
 print time.strftime("[%H:%M:%S] Done.")
-plt.show()
+try:
+    plt.show()
+except KeyboardInterrupt:
+    pass
