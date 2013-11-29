@@ -26,7 +26,7 @@
 \thispagestyle{empty}
 
 \section{Individual steps of $k$-means}
-In the first step of the assignment we are focusing on implementing the $k$-means algorithm and check the results of these individual steps of the algorithm. Choosing the best parameter $k$ always depends on the application. In this example where we have to cluster the datapoints which consist of three clusters, it is best to use $k=3$ but this parameter varies for different applications. For example, image segmentation often needs around 10 clusters to be computed. There is also a big trade off between number of clusters and the performance of the algorithm. We know that for a large value for $k$ algorithm takes long time to converge.
+In the first step of the assignment we are focusing on implementing the $k$-means algorithm and check the results of these individual steps of the algorithm. Choosing the best parameter $k$ always depends on the application. In this example where we have to cluster the datapoints which consist of three clusters, it is best to use $k=3$ but this parameter varies for different applications. For example, image segmentation often needs around 10 (see for instance~\cite{Methenitis2013}) clusters to be computed. There is also a big trade off between number of clusters and the performance of the algorithm. We know that for a large value for $k$ algorithm takes long time to converge.
 A really serious aspect of this algorithm is the relation between its random starting points in the state space and the solution that it gives. There is a big dependency and the algorithm can converge to a different final solutions depending on the starting points for the centers. Figure~\ref{fig:kmeanssimple} depicts the results of the three steps of the algorithm with different values for $k$.
 
 
@@ -362,4 +362,6 @@ Comparing the bag of words retrieval system with the color histogram retrieval s
   \label{tab:color_precision}
 \end{table}
 
+\bibliographystyle{plain}
+\bibliography{thereference}
 \end{document}
