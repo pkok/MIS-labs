@@ -148,46 +148,136 @@ See Figure~\ref{fig:bow_retrieval} for the ranking.
 \begin{figure}
   \begin{subfigure}{0.47\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{ranking_h_6.png}
-    \caption{Histogram distance, \texttt{all\_souls\_000006.png}}
+    \includegraphics[width=\textwidth]{ranking_h_6}
+    \caption{Histogram distance, \texttt{all\_souls\_000006.png}.}
   \end{subfigure}
   \hspace*{\fill}
   \begin{subfigure}{0.47\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{ranking_l_6.png}
-    \caption{$\ell_2$ distance, \texttt{all\_souls\_000006.png}}
+    \includegraphics[width=\textwidth]{ranking_l_6}
+    \caption{$\ell_2$ distance, \texttt{all\_souls\_000006.png}.}
   \end{subfigure}
   \begin{subfigure}{0.47\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{ranking_h_65.png}
-    \caption{Histogram distance, \texttt{all\_souls\_000065.png}}
-  \end{subfigure}
-  \hspace*{\fill}
-  \begin{subfigure}{0.47\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{ranking_l_65.png}
-    \caption{$\ell_2$ distance, \texttt{all\_souls\_000065.png}}
-  \end{subfigure}
-  \begin{subfigure}{0.47\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{ranking_h_75.png}
-    \caption{Histogram distance, \texttt{all\_souls\_000075.png}}
+    \includegraphics[width=\textwidth]{ranking_h_65}
+    \caption{Histogram distance, \texttt{all\_souls\_000065.png}.}
   \end{subfigure}
   \hspace*{\fill}
   \begin{subfigure}{0.47\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{ranking_l_75.png}
-    \caption{$\ell_2$ distance, \texttt{all\_souls\_000075.png}}
+    \includegraphics[width=\textwidth]{ranking_l_65}
+    \caption{$\ell_2$ distance, \texttt{all\_souls\_000065.png}.}
+  \end{subfigure}
+  \begin{subfigure}{0.47\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{ranking_h_75}
+    \caption{Histogram distance, \texttt{all\_souls\_000075.png}.}
+  \end{subfigure}
+  \hspace*{\fill}
+  \begin{subfigure}{0.47\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{ranking_l_75}
+    \caption{$\ell_2$ distance, \texttt{all\_souls\_000075.png}.}
   \end{subfigure}
   \caption{Ranking of retrieved images based on different distance measures between histograms of bags of words.}
   \label{fig:bow_retrieval}
 \end{figure}
 
 \section{Evaluating Bag-of-Words histograms}
-\todo{see section 5.2}
+Precision scores of the bag of words retrieval system can be found in Figure~\ref{fig:precision}.  Precision scores of the color histogram retrieval system for the same images can be found in table~\ref{tab:color_precision}.  The precision of the bag of words retrieval system seems to have an optimum for the codebook size.  Smaller codebooks such as 5 and 10 seem to perform at least equally well in most cases as larger codebooks such as 500 and 1000.  No strong conclusions can be made based on the current observations, as only a small number of queries have been examined.  
 
-\section{Bonus 1}
+From the average precision scores, we might be able to conclude that the histogram distance performs better than the $\ell_2$ distance, although there is barely any difference.  
 
-\section{Bonus 2}
+We might also conclude that there are very few images like \texttt{all\_souls\_000075}, as neither measure returns high precision.  
+
+To propose a method to improve the accuracy of the system, we should investigate the current accuracy as well, which has not been done. A method to improve the precision might be to use a different feature descriptor than SIFT.  One might want to look at histograms of oriented gradients, SURF or AGAST.
+
+Comparing the bag of words retrieval system with the color histogram retrieval system, we can observe that only for the precision@5 with heuristic distance measure and precision@10 with the $\ell_2$ distance measure, the color histogram system outperforms the bag of words system with codebook 100 with query image \texttt{all\_souls\_000075}.  In all other cases, the bag of words system outperforms the color histogram system.  This is not that strange; the bag of words system is based on a more advanced feature descriptor method than color histograms.
+
+\begin{figure}
+  \begin{subfigure}{0.47\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{p5h}
+    \caption{Precision@5, histogram distance.}
+  \end{subfigure}
+  \hspace*{\fill}
+  \begin{subfigure}{0.47\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{p5l}
+    \caption{Precision@5, $\ell_2$ distance.}
+  \end{subfigure}
+  \begin{subfigure}{0.47\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{p10h}
+    \caption{Precision@10, histogram distance.}
+  \end{subfigure}
+  \hspace*{\fill}
+  \begin{subfigure}{0.47\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{p10l}
+    \caption{Precision@10, $\ell_2$ distance.}
+  \end{subfigure}
+  \begin{center}
+    \begin{subfigure}{0.47\textwidth}
+      \centering
+      \includegraphics[width=.5\textwidth]{precision_legend}
+      \caption{Legend for the above figures}
+      \label{fig:precision_legend}
+    \end{subfigure}
+  \end{center}
+  \caption{Precision@5 and precision@10 with histogram and $\ell_2$ distance measures for the bag of words retrieval system.  Results are shown for three different images, and their average scores.  The legend for all graphs is provided in Figure~\ref{fig:precision_legend}.}
+  \label{fig:precision}
+\end{figure}
+
+\begin{table}
+  \begin{subtable}{0.47\textwidth}
+    \begin{tabular}{l|l}
+      \texttt{all\_souls\_000006} & $0.2$ \\
+      \texttt{all\_souls\_000065} & $0.8$ \\
+      \texttt{all\_souls\_000075} & $0.2$ \\
+      \hline
+      Average                     & $0.12$ \\
+    \end{tabular}
+    \caption{Precision@5, histogram distance.}
+    \label{tab:color_p5h}
+  \end{subtable}
+  \hspace*{\fill}
+  \begin{subtable}{0.47\textwidth}
+    \begin{tabular}{l|l}
+      \texttt{all\_souls\_000006} & $0.2$ \\
+      \texttt{all\_souls\_000065} & $0.6$ \\
+      \texttt{all\_souls\_000075} & $0.0$ \\
+      \hline
+      Average                     & $0.27$ \\
+    \end{tabular}
+    \caption{Precision@5, $\ell_2$ distance.}
+    \label{tab:color_p5l}
+  \end{subtable}
+  \begin{subtable}{0.47\textwidth}
+    \begin{tabular}{l|l}
+      \texttt{all\_souls\_000006} & $0.1$ \\
+      \texttt{all\_souls\_000065} & $0.4$ \\
+      \texttt{all\_souls\_000075} & $0.0$ \\
+      \hline
+      Average                     & $0.17$ \\
+    \end{tabular}
+    \caption{Precision@10, histogram distance.}
+    \label{tab:color_p10h}
+  \end{subtable}
+  \hspace*{\fill}
+  \begin{subtable}{0.47\textwidth}
+    \begin{tabular}{l|l}
+      \texttt{all\_souls\_000006} & $0.1$ \\
+      \texttt{all\_souls\_000065} & $0.5$ \\
+      \texttt{all\_souls\_000075} & $0.2$ \\
+      \hline
+      Average                     & $0.27$ \\
+    \end{tabular}
+    \caption{Precision@10, $\ell_2$ distance.}
+    \label{tab:color_p10l}
+  \end{subtable}
+  \caption{Precision@5 and precision@10 with histogram and $\ell_2$ distance measures for the color histogram retrieval system.  Results are shown for three different images, and their average scores.}
+  \label{tab:color_precision}
+\end{table}
 
 \end{document}
