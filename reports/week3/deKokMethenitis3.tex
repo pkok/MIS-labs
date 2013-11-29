@@ -26,8 +26,8 @@
 \thispagestyle{empty}
 
 \section{Individual steps of $k$-means}
-In the first step of the assignment we are focusing on implementing the k-means algorithm and check the results of these individual steps of the algorithm. Choosing the best K parameter always depends on the application. In the example that we have to cluster the datapoints which consist three clusters is best to use k=3 but this parameter varies for different applications. For example, image segmentation often needs around 10 clusters to be computed. There is also a big trade off between number of clusters and the performance of the algorithm. We know that for a large value for k algorithm takes long time to converge.
-A really serious aspect of this algorithm is the relation between its random starting points in the state space and the solution that it gives. There is a big dependency and the algorithm can converge to a different final solutions depending on the starting points for the centers. Figure~\ref{fig:kmeanssimple}, depicts the results of the three steps of the algorithm with different k values.
+In the first step of the assignment we are focusing on implementing the $k$-means algorithm and check the results of these individual steps of the algorithm. Choosing the best parameter $k$ always depends on the application. In this example where we have to cluster the datapoints which consist of three clusters, it is best to use $k=3$ but this parameter varies for different applications. For example, image segmentation often needs around 10 clusters to be computed. There is also a big trade off between number of clusters and the performance of the algorithm. We know that for a large value for $k$ algorithm takes long time to converge.
+A really serious aspect of this algorithm is the relation between its random starting points in the state space and the solution that it gives. There is a big dependency and the algorithm can converge to a different final solutions depending on the starting points for the centers. Figure~\ref{fig:kmeanssimple} depicts the results of the three steps of the algorithm with different values for $k$.
 
 
 \begin{figure}
@@ -52,27 +52,37 @@ A really serious aspect of this algorithm is the relation between its random sta
     \includegraphics[width=.32\textwidth,height=.3\textheight,keepaspectratio]{figure_9.eps}
     \caption{K=10}
   \end{subfigure}
-  \caption{Illustration of the three first steps of the K-means algorithm for k=3,5,10.}
+  \caption{Illustration of the three first steps of the $k$-means algorithm for $k=3,5,10$.}
   \label{fig:kmeanssimple}
 \end{figure}
 
 \section{Running your implemented $k$-means}
-In this part of the assignment we do the same algorithm but now an iterative approach. After the new assignment of the center points of the clusters we go to the second step again and we compute new centers. We continue the iterations until a maximum number of iterations is reached. Figure~\ref{fig:kmeansiter}, depicts the results of the iterative method for 1, 5, 10, 20 iterations, you can see in the figure that the centers are going towards the actual centers of the clusters. However, this is not always the case as the random first step can lead to different results.
+In this part of the assignment we apply the same algorithm but now use it iteratively. After the new assignment of the center points of the clusters we go to the second step again and we compute new centers. We continue the iterations until a maximum number of iterations is reached. Figure~\ref{fig:kmeansiter} depicts the results of the iterative method for 1, 5, 10 and 20 iterations.  You can see in the figure that the centers are going towards the actual centers of the clusters. However, this is not always the case as the random first step can lead to different results.
 
 
 \begin{figure}
-  \begin{subfigure}{1.0\textwidth}
-    \centering
-    \includegraphics[width=.49\textwidth,height=.3\textheight,keepaspectratio]{figure_1_1.eps}
-    \includegraphics[width=.49\textwidth,height=.3\textheight,keepaspectratio]{figure_1_2.eps}
+  \centering
+  \begin{subfigure}{.44\textwidth}
+    \includegraphics[width=\textwidth,height=.5\textheight,keepaspectratio]{figure_1_1.eps}
+    \caption{Iteration level: 1}
   \end{subfigure}
-  \begin{subfigure}{1.0\textwidth}
-    \centering
-    \includegraphics[width=.49\textwidth,height=.3\textheight,keepaspectratio]{figure_1_3.eps}
-    \includegraphics[width=.49\textwidth,height=.3\textheight,keepaspectratio]{figure_1_4.eps}
+  \hspace*{\fill}
+  \begin{subfigure}{.44\textwidth}
+    \includegraphics[width=\textwidth,height=.5\textheight,keepaspectratio]{figure_1_2.eps}
+    \caption{Iteration level: 5}
   \end{subfigure}
 
-  \caption{Illustration of the iterative K-means algorithm for different maximum iterations levels, top left:1, top right:5, bottom left:10, bottom right:20.}
+  \begin{subfigure}{.44\textwidth}
+    \includegraphics[width=\textwidth,height=.3\textheight,keepaspectratio]{figure_1_3.eps}
+    \caption{Iteration level: 10}
+  \end{subfigure}
+  \hspace*{\fill}
+  \begin{subfigure}{.44\textwidth}
+    \includegraphics[width=\textwidth,height=.3\textheight,keepaspectratio]{figure_1_4.eps}
+    \caption{Iteration level: 20}
+  \end{subfigure}
+
+  \caption{Illustration of the iterative $k$-means algorithm for different maximum iterations levels.}%, top left:1, top right:5, bottom left:10, bottom right:20.}
   \label{fig:kmeansiter}
 \end{figure}
 
@@ -90,16 +100,16 @@ if max_change < 0.001:
 \end{verbatim}
 
 \section{Color-based image segmentation}
-Now, we apply the same algorithm on actual images. The main idea is the same but now we are dealing with a high-dimensional space, so we expect this algorithm to be really slow. Thing that applies especially for large K values. We ran the k-means algorithm in the given image for K = 3, 5, 10, 50, 100. Figure~\ref{fig:imagekmeans} illustrates the resulting color segments of the image. We can see that for small values for K the image for example K = 3, each pixel is assigned a value of one of the three clusters, the resulting image has only three colors and different features in the picture can easily extracted. As the number of clusters increases the clustering is becoming more and more detailed. For k = 100 we can hardly see any difference between the clustered and the original image.
+Now, we apply the same algorithm on actual images. The main idea is the same but now we are dealing with a high dimensional space, so we expect this algorithm to be really slow. Thing that applies especially for large K values. We ran the $k$-means algorithm in the given image for $k = 3, 5, 10, 50, 100$. Figure~\ref{fig:imagekmeans} illustrates the resulting color segments of the image. We can see that for small values for $k$ the image for example $K = 3$, each pixel is assigned a value of one of the three clusters, the resulting image has only three colors and different features in the picture can easily extracted. As the number of clusters increases the clustering is becoming more and more detailed. For $k = 100$ we can hardly see any difference between the clustered and the original image.
 
 \begin{figure}
     \centering
-    \includegraphics[trim = 1.5cm 3.5cm 1.5cm 3.5cm ,clip=true, width=1.0\textwidth,height=.2\textheight,keepaspectratio]{figure_2_1.png}
-    \includegraphics[trim = 1.5cm 3.5cm 1.5cm 3.5cm ,clip=true, width=1.0\textwidth,height=.2\textheight,keepaspectratio]{figure_2_2.png}
-    \includegraphics[trim = 1.5cm 3.5cm 1.5cm 3.5cm ,clip=true, width=1.0\textwidth,height=.2\textheight,keepaspectratio]{figure_2_3.png}
-    \includegraphics[trim = 1.5cm 3.5cm 1.5cm 3.5cm ,clip=true, width=1.0\textwidth,height=.2\textheight,keepaspectratio]{figure_2_4.png}
-    \includegraphics[trim = 1.5cm 3.5cm 1.5cm 3.5cm ,clip=true, width=1.0\textwidth,height=.2\textheight,keepaspectratio]{figure_2_5.png}
-  \caption{Illustration of K-means algorithm for the above coral image, for K = 3, 5, 10, 50, 100.}
+    \includegraphics[trim = 1.5cm 3.5cm 1.5cm 3.5cm ,clip=true, width=1.0\textwidth,height=.19\textheight,keepaspectratio]{figure_2_1.png}
+    \includegraphics[trim = 1.5cm 3.5cm 1.5cm 3.5cm ,clip=true, width=1.0\textwidth,height=.19\textheight,keepaspectratio]{figure_2_2.png}
+    \includegraphics[trim = 1.5cm 3.5cm 1.5cm 3.5cm ,clip=true, width=1.0\textwidth,height=.19\textheight,keepaspectratio]{figure_2_3.png}
+    \includegraphics[trim = 1.5cm 3.5cm 1.5cm 3.5cm ,clip=true, width=1.0\textwidth,height=.19\textheight,keepaspectratio]{figure_2_4.png}
+    \includegraphics[trim = 1.5cm 3.5cm 1.5cm 3.5cm ,clip=true, width=1.0\textwidth,height=.19\textheight,keepaspectratio]{figure_2_5.png}
+  \caption{Illustration of $k$-means algorithm for the above coral image, for $k = 3, 5, 10, 50, 100$.}
   \label{fig:imagekmeans}
 \end{figure}
 
