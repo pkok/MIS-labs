@@ -286,8 +286,6 @@ for n in PRECISION_LIMITS:
             + [enumeration[-1] + 0.5]
         ax.set_xticks(range(len(values)))
         ax.set_xticklabels(map(str, BOW_SIZES))
-        plt.legend(numpoints=1)
-        plt.show()
 
 # PART 5. STEP 6. COMPUTE THE PRECISION@{5,10} FOR HISTOGRAM BASED RETRIEVAL
 # Generate histogram for each image in the dataset
