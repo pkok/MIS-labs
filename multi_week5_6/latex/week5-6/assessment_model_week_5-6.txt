@@ -1,0 +1,72 @@
+-------------------------------------------------------------------------------
+Assessment guidelines for assignment of Week 2
+-------------------------------------------------------------------------------
+
+Q1. Different between normalizing per histogram and per dimension of historgams (section 2.3.3)
+	
+	Maximum
+		1 point
+	
+	Evaluation
+		[1 point]	The answer is correct
+		[0 points]	The answer is wrong [0 points]
+
+Q2. Matching SIFT (section 2.3.3 step C.2)
+	
+	Maximum
+		2 points
+	
+	Evaluation
+		[2 points] 	The matches are correct and a reasonable threshold is suggested
+		[1 point] 	The matches look correct but no threshold was suggested
+		[0 points] 	The answer is wrong
+
+Q3. SIFT invariances (section 2.4)
+
+	Maximum
+		3 point
+	
+	Evaluation
+		[3 points] 	All invariances are explained correctly
+		[1.5 point] At least one invariance is explained correctly
+		[0 points] 	The answer is wrong
+
+Q4. Find the points (section 2.5.1)
+
+	Maximum
+		1 point
+	
+	Evaluation
+		[1 point] 	The points where plotted correctly
+		[0 points] 	The answer is wrong
+
+Q5. Compute homography between two images (section 2.6.1)
+
+	Maximum
+		1 point
+	
+	Evaluation
+		[1 points] 	The visualization is good and the observations are correct
+		[0.5 point] The visualization is good but no observations reported
+		[0 points] 	The answer is wrong
+
+Q6. Image recognition with geometric verification (section 2.6.2)
+
+	Maximum
+		2 point
+	
+	Evaluation
+		[2 points] 	The correct images were recognized
+		[1 point] 	Some of the correct images were recognized
+		[0 points] 	The answer is wrong
+
+Q7. Bonus
+
+	Maximum
+		2 points
+
+	Evaluation
+		[1 point] 	Correct answer for answering the connection between normalization and invariance
+		[1 point] 	Correct answer in recovering H_{2, 1}
+
+
