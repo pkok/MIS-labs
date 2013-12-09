@@ -10,7 +10,6 @@ import matplotlib.cm as cmx
 import pickle
 from collections import defaultdict
 import math
-import sys
 sys.path.insert(0, '../')
 import tools
 import math
@@ -39,41 +38,27 @@ for impath in files:
 
 # Q1: IMPLEMENT HERE kNN CLASSIFIER. 
 # YOU CAN USE CODE FROM PREVIOUS WEEK
-histograms = []
-print "computing histograms",
-for image_path in files:
-  print ".",
-  im = pl.imread(image_path)
-  histo = []
-  pixels = float(im.shape[0] * im.shape[1])
-  for channel in range(im.shape[-1]):
-      histo.append(np.bincount(im[:, :, channel].flatten(), minlength=256) / pixels)
-  np.concatenate(histo)
-  histograms.append(histo)
-print ""
-  
+
+K = 9 
+query_id = 366# (366, goal), (150, bicycle), (84, beach ), (450, mountain)
+ranking = np.argsort(dist[query_id, :])
+ranking = ranking[::-1]
+nearest_labels = labels[trainset[ranking[0 : K]]]
+
+# VISUALIZE RESULTS
+figure
+subplot(2, 6, 1)
+imshow(Image.open(files[query_id]))
+title('Query')
+axis('off')
+
+for cnt in range(K):
+    subplot(2, 6, cnt+2)
+    imshow(Image.open(files[trainset[ranking[cnt]]]))
+    title(unique_labels[nearest_labels[cnt]-1])
+    axis('off')
 
 
-# K = 9 
-# query_id = 366# (366, goal), (150, bicycle), (84, beach ), (450, mountain)
-# ranking = np.argsort(dist[query_id, :])
-# ranking = ranking[::-1]
-# nearest_labels = labels[trainset[ranking[0 : K]]]
-
-# # VISUALIZE RESULTS
-# figure
-# subplot(2, 6, 1)
-# imshow(Image.open(files[query_id]))
-# title('Query')
-# axis('off')
-
-# for cnt in range(K):
-#     subplot(2, 6, cnt+2)
-#     imshow(Image.open(files[trainset[ranking[cnt]]]))
-#     title(unique_labels[nearest_labels[cnt]-1])
-#     axis('off')
-
-"""
 # Q2: USE DIFFERENT STRATEGY
 
 # Q3: For K = 9, COMPUTE THE CLASS ACCURACY FOR THE TESTSET
@@ -172,7 +157,7 @@ for impath in files:
 # Q12: Visualize the best performing SVM, what are good classes, bad classes, examples of images etc
 
 # Q13: Compare SVM with k-NN
-"""
+
 
 
 
