@@ -2,8 +2,9 @@ import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
 import matplotlib.colors as clr
-#import scipy as sc
-#import scipy.cluster.vq as cluster
+import scipy as sc
+import scipy.cluster.vq as cluster
+import sys
 import random
 import os
 import matplotlib.cm as cmx
@@ -23,7 +24,8 @@ np.set_printoptions(suppress=True)
 np.set_printoptions(linewidth=200)
 
 ####
-
+# WORKING CODE
+"""
 files, labels, label_names, unique_labels, trainset, testset = week56.get_objects_filedata()
 
 C = 100
@@ -38,29 +40,43 @@ for impath in files:
 
 # Q1: IMPLEMENT HERE kNN CLASSIFIER. 
 # YOU CAN USE CODE FROM PREVIOUS WEEK
+dist = np.zeros([len(testset),len(trainset)])
+for i in range(len(testset)):
+    b_i = tools.normalizeL1(bow[testset[i],:])
+    for j in range(len(trainset)):
+        b_j = tools.normalizeL1(bow[trainset[j],:])
+        dist[i,j] = sum(np.minimum(b_i,b_j))
 
 K = 9 
-query_id = 366# (366, goal), (150, bicycle), (84, beach ), (450, mountain)
+query_id = 90# (366, goal), (150, bicycle), (84, beach ), (450, mountain)
 ranking = np.argsort(dist[query_id, :])
 ranking = ranking[::-1]
 nearest_labels = labels[trainset[ranking[0 : K]]]
 
 # VISUALIZE RESULTS
-figure
-subplot(2, 6, 1)
-imshow(Image.open(files[query_id]))
-title('Query')
-axis('off')
+plt.figure
+plt.subplot(2, 6, 1)
+plt.imshow(Image.open(files[query_id]))
+plt.title('Query')
+plt.axis('off')
 
 for cnt in range(K):
-    subplot(2, 6, cnt+2)
-    imshow(Image.open(files[trainset[ranking[cnt]]]))
-    title(unique_labels[nearest_labels[cnt]-1])
-    axis('off')
+    plt.subplot(2, 6, cnt+2)
+    plt.imshow(Image.open(files[trainset[ranking[cnt]]]))
+    plt.title(unique_labels[nearest_labels[cnt]-1])
+    plt.axis('off')
+plt.show()
+"""
 
 
+
+# UNTOUCHED CODE
+"""
 # Q2: USE DIFFERENT STRATEGY
+"""
 
+# UNTOUCHED CODE
+"""
 # Q3: For K = 9, COMPUTE THE CLASS ACCURACY FOR THE TESTSET
 dist = np.zeros([len(testset), len(trainset)])
 for i in range(len(testset)):
@@ -75,9 +91,11 @@ for c in range(len(unique_labels)):
 
 # REPORT THE CLASS ACC *PER CLASS* and the MEAN
 # THE MEAN SHOULD BE (CLOSE TO): 0.31
+"""
 
 
-
+# UNTOUCHED CODE
+"""
 # Q4: DO CROSS VALIDATION TO DEFINE PARAMETER K 
 K = [1, 3, 5, 7, 9, 15]
 
@@ -91,24 +109,43 @@ K = [1, 3, 5, 7, 9, 15]
 # PART 3. SVM ON TOY DATA
 data, labels = week56.generate_toy_data()
 svm_w, svm_b = week56.generate_toy_potential_classifiers(data,labels)
+"""
+
 
 # Q5: CLASSIFY ACCORDING TO THE 4 DIFFERENT CLASSIFIERS AND VISUALIZE THE RESULTS
 
-pred = ...
+# WORKING CODE
+"""
+data, labels = week56.generate_toy_data()
+svm_w, svm_b = week56.generate_toy_potential_classifiers(data, labels)
+pred = []
+for i in range(len(data)):
+  pred.append(np.sign((svm_w[0].T * data[i]) + svm_b[0]))
 
-figure()
+
+plt.figure()
 plt.scatter(data[labels==1, 0], data[labels==1, 1], facecolor='r')
 plt.scatter(data[labels==-1, 0], data[labels==-1, 1], facecolor='g')
 plt.plot(data[pred==1, 0], data[pred==1, 1], marker='o', markersize=10, markeredgecolor='r', markerfacecolor='none', linestyle='none', markeredgewidth=2.0)
 plt.plot(data[pred==-1, 0], data[pred==-1, 1], marker='o', markersize=10, markeredgecolor='g', markerfacecolor='none', linestyle='none', markeredgewidth=2.0)
 
+plt.show()
+"""
 
+
+
+
+# UNTOUCHED CODE
+"""
 # Q6: USE HERE SVC function from sklearn to run a linear svm
 # THEN USE THE PREDICT FUNCTION TO PREDICT THE LABEL FOR THE SAME DATA
 svc = svm.SVC( ... )
 pred = ...
+"""
 
 
+# UNTOUCHED CODE
+"""
 # PART 4. SVM ON RING DATA
 data, labels = week56.generate_ring_data()
 
@@ -119,8 +156,6 @@ plt.scatter(data[labels==-1, 0], data[labels==-1, 1], facecolor='g')
 # Q7: USE LINEAR SVM AS BEFORE, VISUALIZE RESULTS and DRAW PREFERRED CLASSIFICATION LINE IN FIGURE
 
 # Q8: (report only) 
-
-
 
 C = 1.0  # SVM regularization parameter
 # Q9: TRANSFORM DATA TO POLAR COORDINATES FIRST
@@ -160,4 +195,4 @@ for impath in files:
 
 
 
-
+"""
