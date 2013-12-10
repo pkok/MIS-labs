@@ -28,6 +28,11 @@
 \section{Implement $k$-NN classifier}
 
 \section{Different $k$-NN strategy}
+One possibility would be to return a vector of probabilities, where each element represents the probability that the query image belongs to that class.  The probability of a label will be computed as the relative frequency of that label among the $k$ nearest neighbors in the training images.  Smoothing methods may be applied, such as Good-Turing smoothing, such that the probability of the query image having one of the labels that did not occur among the test images, is not zero.
+
+This will give you a probability distribution $P(\mbox{label} | \mbox{query})$, which can be more meaningful for the end user of the system.  For instance, where binary classifiers will tell you that an image represents a label falsely, this classifier will present a low probability.  This will express the classifier's low certainty of the label belonging to the image.
+
+A version of this, without Good-Turing smoothing has been implemented. % Bluff! Will do so.
 
 \section{Implement mean class accuracy}
 
