@@ -1,72 +1,136 @@
 -------------------------------------------------------------------------------
-Assessment guidelines for assignment of Week 2
+Assessment guidelines for assignment 3: Image Classification
+-------------------------------------------------------------------------------
+NOTE: this week you can earn 20 points, so your mark is (#points / 2)
 -------------------------------------------------------------------------------
 
-Q1. Different between normalizing per histogram and per dimension of historgams (section 2.3.3)
+Q1. Implement k-NN classifier
 	
 	Maximum
 		1 point
 	
 	Evaluation
-		[1 point]	The answer is correct
-		[0 points]	The answer is wrong [0 points]
+		[1 point]	All steps are implemented and correct answers
 
-Q2. Matching SIFT (section 2.3.3 step C.2)
+Q2. Different k-NN strategy
 	
 	Maximum
 		2 points
 	
 	Evaluation
-		[2 points] 	The matches are correct and a reasonable threshold is suggested
-		[1 point] 	The matches look correct but no threshold was suggested
-		[0 points] 	The answer is wrong
+		[2 points] 	A different strategy is well explained, implemented and compared to default 
+		[1 point] 	only implemented and compared, or
+		[1 point] 	only described and explained
 
-Q3. SIFT invariances (section 2.4)
-
-	Maximum
-		3 point
-	
-	Evaluation
-		[3 points] 	All invariances are explained correctly
-		[1.5 point] At least one invariance is explained correctly
-		[0 points] 	The answer is wrong
-
-Q4. Find the points (section 2.5.1)
+Q3. Implement mean class accuracy
 
 	Maximum
 		1 point
 	
 	Evaluation
-		[1 point] 	The points where plotted correctly
-		[0 points] 	The answer is wrong
+		[1 point] 	Correct implementation
 
-Q5. Compute homography between two images (section 2.6.1)
+Q4. Cross validation of K
 
 	Maximum
-		1 point
+		2 points
 	
 	Evaluation
-		[1 points] 	The visualization is good and the observations are correct
-		[0.5 point] The visualization is good but no observations reported
-		[0 points] 	The answer is wrong
+		[2 points] 	Cross validation is performed well, and well described
+		[1 point] 	Several values for k are evaluated, but not the correct procedure, and
+				a single (possibly suboptimal) value is chosen and described
 
-Q6. Image recognition with geometric verification (section 2.6.2)
+Q5. Evaluation of 4 possible classifiers
 
 	Maximum
 		2 point
 	
 	Evaluation
-		[2 points] 	The correct images were recognized
-		[1 point] 	Some of the correct images were recognized
-		[0 points] 	The answer is wrong
+		[2 points] 	The visualization is good and the observations are correct for all 4
+		[1 point] 	Only 2 or 3 classifiers are discussed, but observations are correct, or
+		[1 point]	All visualisations are correct, but observations are missing
 
-Q7. Bonus
+Q6. Use scikit
+
+	Maximum
+		1 point
+	
+	Evaluation
+		[1 point] 	Correct call to scikit library
+
+Q7. Ring data - linear SVM
+
+	Maximum
+		1 points
+
+	Evaluation
+		[1 point] 	Good observations, correct class accuracy and nice drawing
+
+
+Q8. Non linear transformations
 
 	Maximum
 		2 points
 
 	Evaluation
-		[1 point] 	Correct answer for answering the connection between normalization and invariance
-		[1 point] 	Correct answer in recovering H_{2, 1}
+		[2 points] 	Two different non-linear transformations 
+		[1 point] 	A single non-linear transformation
+
+Q9. Transform to polar coordinates
+
+	Maximum
+		1 points
+
+	Evaluation
+		[1 point] 	Correct answer and good visualisation
+
+Q10. Non-linear SVM
+
+	Maximum
+		2 points
+
+	Evaluation
+		[2 point] 	Correct visualisations (original space, polar space) and class accuracies 
+		[1 point] 	Missing a visualisation, or
+		[1 point] 	good visualisations, but incorrect class accuracies
+
+Q11. Image Classification - Linear SVM
+
+	Maximum
+		3 points
+
+	Evaluation
+		[3 points]	Correct answer: cross validation of C, different codebook sizes, correct class accuracies, well described
+		[2 points]   	Correct answers, but no clear descriptions
+		[1 point] 	No cross validation (but different codebook sizes), or
+		[1 point] 	A single codebook size (but cross validation)
+
+Q12. Image Classification - Discussing the results
+
+	Maximum
+		1 points
+
+	Evaluation
+		[1 point] 	Good observations and visualisations of the best and worst performing classes
+
+Q13. Image Classification - Comparison kNN vs SVM
+
+	Maximum
+		1 points
+
+	Evaluation
+		[1 point] 	Good observations and visualisations of the differences between kNN and SVM for different codebook sizes
 
 
+******************
+Bonus
+******************
+You can do a *single* bonus question, for correct implementation and description of the bonus you get 2 points, so you can obtain an 11 in stead of a 10.
+
+The topics to choose are:
+a) The kernel trick
+b) Learning the SVM weight vector
+c) Multi-class image classification
+
+Please post on Piazza if you’re interested in doing a bonus, no later than Thursday dec 12th 23:59.
+The bonus will be provided within a day
