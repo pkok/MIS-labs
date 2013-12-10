@@ -28,11 +28,13 @@
 \section{Implement $k$-NN classifier}
 
 \section{Different $k$-NN strategy}
-One possibility would be to return a vector of probabilities, where each element represents the probability that the query image belongs to that class.  The probability of a label will be computed as the relative frequency of that label among the $k$ nearest neighbors in the training images.  Smoothing methods may be applied, such as Good-Turing smoothing, such that the probability of the query image having one of the labels that did not occur among the test images, is not zero.
+A possible alternative to this simple voting mechanism will be by weighing each vote.  Votes for each label will be weighed by: \[ w_\ell = \frac{1}{\#\ell} \] where $\#\ell$ represents the frequency of label $\ell$ occurring among the training images.  One might want to normalize these weights before they are used, such that \[\bar w_\ell = \frac{w_\ell}{\sum_{\ell \in L} w_\ell} .\] Here, $L$ is the set of all labels.  This ensures that \[\sum_{\ell \in L} w_\ell = 1.\]
 
-This will give you a probability distribution $P(\mbox{label} | \mbox{query})$, which can be more meaningful for the end user of the system.  For instance, where binary classifiers will tell you that an image represents a label falsely, this classifier will present a low probability.  This will express the classifier's low certainty of the label belonging to the image.
+Because the training set is quite limited, we might be interested in applying a smoothing method over these weights, such as Good-Turing smoothing.  This will even out the pure chance occurance of very frequent labels and very infrequent labels.  
 
-A version of this, without Good-Turing smoothing has been implemented. % Bluff! Will do so.
+By weighing votes of very frequent labels less and very infrequent labels more, we tell the system that when a rare (or common) label is suspected to occur in the image this is very (or less) significant than expected.
+
+Implementing Good-Turing smoothing seems to be out of the scope of this assignment.  The proposed solution without smoothing is implemented, and results are presented below.  % Lies! Still have to implement everything.
 
 \section{Implement mean class accuracy}
 
