@@ -19,13 +19,15 @@ from sklearn import svm, datasets
 
 import week56
 
+random.seed(0)
+
 np.set_printoptions(precision=3)
 np.set_printoptions(suppress=True)
 np.set_printoptions(linewidth=200)
 
 ####
 # WORKING CODE
-"""
+#"""
 files, labels, label_names, unique_labels, trainset, testset = week56.get_objects_filedata()
 
 C = 100
@@ -38,42 +40,68 @@ for impath in files:
     filpat2, filnam2, filext2 = tools.fileparts(filpat)
     bow[cnt, :] = week56.load_bow('../../data/bow_objects/codebook_' + str(C) + '/' + filnam2 + '/' + filnam + '.pkl')
 
-# Q1: IMPLEMENT HERE kNN CLASSIFIER. 
+# Q1: IMPLEMENT HERE kNN CLASSIFIER.
 # YOU CAN USE CODE FROM PREVIOUS WEEK
-dist = np.zeros([len(testset),len(trainset)])
+dist = np.zeros([len(testset), len(trainset)])
 for i in range(len(testset)):
-    b_i = tools.normalizeL1(bow[testset[i],:])
+    b_i = tools.normalizeL1(bow[testset[i], :])
     for j in range(len(trainset)):
-        b_j = tools.normalizeL1(bow[trainset[j],:])
-        dist[i,j] = sum(np.minimum(b_i,b_j))
+        b_j = tools.normalizeL1(bow[trainset[j], :])
+        dist[i, j] = sum(np.minimum(b_i, b_j))
 
-K = 9 
-query_id = 90# (366, goal), (150, bicycle), (84, beach ), (450, mountain)
-ranking = np.argsort(dist[query_id, :])
-ranking = ranking[::-1]
-nearest_labels = labels[trainset[ranking[0 : K]]]
+K = 9
+QUERIES = {
+    366: "goal/15",
+    150: "bicycle/37",
+    84: "beach/31",
+    450: "mountain/37"
+}
+accuracy_1 = 0
+accuracy_2 = 0
 
-# VISUALIZE RESULTS
-plt.figure
-plt.subplot(2, 6, 1)
-plt.imshow(Image.open(files[query_id]))
-plt.title('Query')
-plt.axis('off')
+query_set = testset
+query_set = QUERIES
+for query_id in query_set:
+    testset_id = np.argwhere(testset == query_id)[0, 0]
+    ranking = np.argsort(dist[testset_id, :])
+    ranking = ranking[::-1]
+    nearest_labels = labels[trainset[ranking[:K]]]
+    true_label = label_names[query_id]
 
-for cnt in range(K):
-    plt.subplot(2, 6, cnt+2)
-    plt.imshow(Image.open(files[trainset[ranking[cnt]]]))
-    plt.title(unique_labels[nearest_labels[cnt]-1])
-    plt.axis('off')
-plt.show()
-"""
+    # Label predicted and accuracy according to method of Q1
+    predicted_label1 = unique_labels[np.argmax(np.bincount(nearest_labels)) - 1]
+    accuracy_1 += predicted_label1 == true_label
 
-
-
-# UNTOUCHED CODE
-"""
 # Q2: USE DIFFERENT STRATEGY
-"""
+#   Only ranking differs from Q1
+    # Label predicted and accuracy according to method of Q2
+    weighted_votes = np.zeros(len(unique_labels))
+    for rank, ranked in enumerate(ranking[:K]):
+        #weighted_votes[labels[trainset[ranked]]-1] += 1 - ((1. + rank) / (2 + rank))
+        weighted_votes[labels[trainset[ranked]]-1] += ((1.) / (1 + rank))
+    predicted_label2 = unique_labels[np.argmax(weighted_votes)]
+    accuracy_2 += predicted_label2 == true_label
+
+    # VISUALIZE RESULTS
+    plt.figure()
+    plt.subplot(2, 5, 1)
+    plt.imshow(Image.open(files[query_id]))
+    plt.title('Query\n' + true_label)
+    plt.axis('off')
+
+    for cnt in range(K):
+        plt.subplot(2, 5, cnt + 2)
+        plt.imshow(Image.open(files[trainset[ranking[cnt]]]))
+        plt.title(unique_labels[nearest_labels[cnt] - 1])
+        plt.axis('off')
+
+print "Accuracy method 1: %d/%d\nAccuracy method 2: %d/%d" % (accuracy_1,
+                                                              len(query_set),
+                                                              accuracy_2,
+                                                              len(query_set))
+plt.show()
+#"""
+
 
 # UNTOUCHED CODE
 """
@@ -96,7 +124,7 @@ for c in range(len(unique_labels)):
 
 # UNTOUCHED CODE
 """
-# Q4: DO CROSS VALIDATION TO DEFINE PARAMETER K 
+# Q4: DO CROSS VALIDATION TO DEFINE PARAMETER K
 K = [1, 3, 5, 7, 9, 15]
 
 # - SPLIT TRAINING SET INTO THREE PARTS.
@@ -155,12 +183,12 @@ plt.scatter(data[labels==-1, 0], data[labels==-1, 1], facecolor='g')
 
 # Q7: USE LINEAR SVM AS BEFORE, VISUALIZE RESULTS and DRAW PREFERRED CLASSIFICATION LINE IN FIGURE
 
-# Q8: (report only) 
+# Q8: (report only)
 
 C = 1.0  # SVM regularization parameter
 # Q9: TRANSFORM DATA TO POLAR COORDINATES FIRST
-rad = 
-ang = 
+rad =
+ang =
 # PLOT POLAR DATA
 
 data2 = np.vstack((rad, ang))
