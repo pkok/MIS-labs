@@ -26,6 +26,7 @@
 \thispagestyle{empty}
 
 \section{Implement $k$-NN classifier}
+As asked for, the most similar images to the four query images \texttt{goal/15.jpg}, \texttt{bicycle/37.jpg}, \texttt{beach/31.jpg} and \texttt{mountain/37.jpg} are drawn in the report.  The images can be found in Figure~\ref{f:knns}.
 
 \begin{figure}
   \begin{subfigure}{.47\textwidth}
@@ -62,20 +63,32 @@ Another weighing mechanism would be based on the global label frequency.  Votes 
 
 With training sets of limited size, one is often interested in applying a smoothing method over these weights, such as Good-Turing smoothing.  This will even out the pure chance occurance of very frequent labels and very infrequent labels.  Because this dataset has equal frequencies for all labels, this method is not applicable, and only the first method is implemented.
 
-Accuracy for both implementations can be found in Table~\ref{t:knnacc}.  One can see that the original implementation performs slightly better.  When inspecting the nearest neighbours of the four queries visually, it becomes clear that the histogram intersection distance is not appropriate for this.  The best label is most often not the first returned by $k$-NN.
+The accuracy for the original $k$-NN implementation over the four queries is $0.5$, while the alternative implementation has an accuracy of $0.25$.  When inspecting the nearest neighbours of the four queries visually, it becomes clear that the histogram intersection distance is not appropriate for this domain.  The best label is most often not the first returned by $k$-NN.
+
+\section{Implement mean class accuracy}
+The accuracy evaluation measure has been implemented, and both $k$-NN label selection mechanisms are evaluated with $k=9$.  The accuracies of both methods per image class and the mean accuracy can be found in Table~\ref{t:classacc}.  Overall both methods have difficulties classifying images correctly.  
 
 \begin{table}
   \centering
   \begin{tabular}{l|rr}
-                       & 4 queries & 100 queries \\
+    Class & Original $k$-NN & Alternative $k$-NN \\
     \hline
-    Original $k$-NN    & $0.5$     & $0.31$ \\
-    Alternative $k$-NN & $0.25$    & $0.26$ \\
+    Airplane & 0.5 & 0.2 \\
+    Beach & 0.1 & 0.1 \\
+    Bicycle & 0.8 & 0.7 \\
+    Boat & 0.2 & 0.3 \\
+    Car & 0.4 & 0.2 \\
+    Flower & 0.4 & 0.3 \\
+    Goal & 0.1 & 0.2 \\
+    Mountain & 0.3 & 0.2 \\
+    Temple & 0.3 & 0.3 \\
+    Train & 0.0 & 0.1 \\
+    \hline
+    \emph{Mean accuracy} & 0.31 & 0.26
   \end{tabular}
-  \caption{Accuracy of the $k$-NN classifier with both voting schemes.}
-  \label{t:knnacc}
+  \caption{Class accuracy per class and the mean accuracy over the complete test set with the original $k$-NN.}
+  \label{t:classacc}
 \end{table}
-\section{Implement mean class accuracy}
 
 \section{Cross validation of $k$}
 

@@ -25,9 +25,65 @@ np.set_printoptions(precision=3)
 np.set_printoptions(suppress=True)
 np.set_printoptions(linewidth=200)
 
+ORIGINAL_METHOD = 1
+SUGGESTED_METHOD = 2
+BOTH_METHODS = ORIGINAL_METHOD | SUGGESTED_METHOD
+
+
+def compute_dists(testset, trainset):
+    dist = np.zeros([len(testset), len(trainset)])
+    for i in range(len(testset)):
+        b_i = tools.normalizeL1(bow[testset[i], :])
+        for j in range(len(trainset)):
+            b_j = tools.normalizeL1(bow[trainset[j], :])
+            dist[i, j] = sum(np.minimum(b_i, b_j))
+    return dist
+
+
+def kNN_classifier(K, query_id, unique_labels, trainset, testset,
+                   method=ORIGINAL_METHOD, dist=None, visualize=False):
+    predicted_labels = []
+
+    if dist is None:
+        dist = compute_dists(testset, trainset)
+
+    testset_id = np.argwhere(testset == query_id)[0, 0]
+    ranking = np.argsort(dist[testset_id, :])
+    ranking = ranking[::-1]
+    nearest_labels = labels[trainset[ranking[:K]]]
+
+    # Label predicted and accuracy according to method of Q1
+    if method & ORIGINAL_METHOD:
+        predicted_labels.append(np.argmax(np.bincount(nearest_labels)))
+
+    # Label predicted and accuracy according to method of Q2
+    if method & SUGGESTED_METHOD:
+        weighted_votes = np.zeros(len(unique_labels))
+        for rank, ranked in enumerate(ranking[:K]):
+            weighted_votes[labels[trainset[ranked]] - 1] += 1. / (1 + rank)
+        predicted_labels.append(np.argmax(weighted_votes) + 1)
+
+    # VISUALIZE RESULTS
+    if visualize:
+        plt.figure()
+        plt.subplot(2, 5, 1)
+        plt.imshow(Image.open(files[query_id]))
+        plt.title('Query ' + str(query_id))
+        plt.axis('off')
+
+        for cnt in range(K):
+            plt.subplot(2, 5, cnt + 2)
+            plt.imshow(Image.open(files[trainset[ranking[cnt]]]))
+            plt.title(unique_labels[nearest_labels[cnt] - 1])
+            plt.axis('off')
+
+    if len(predicted_labels) == 1:
+        return predicted_labels[0]
+    return predicted_labels
+
+
 ####
 # WORKING CODE
-#"""
 files, labels, label_names, unique_labels, trainset, testset = week56.get_objects_filedata()
 
 C = 100
@@ -35,90 +91,71 @@ bow = np.zeros([len(files), C])
 cnt = -1
 for impath in files:
     cnt = cnt + 1
-    print str(cnt) + '/' + str(len(files)) + '): ' + impath
+    print '\r' + str(cnt) + '/' + str(len(files)) + '): ' + impath,
     filpat, filnam, filext = tools.fileparts(impath)
     filpat2, filnam2, filext2 = tools.fileparts(filpat)
     bow[cnt, :] = week56.load_bow('../../data/bow_objects/codebook_' + str(C) + '/' + filnam2 + '/' + filnam + '.pkl')
+print ''
 
+print 'Computing distance matrix...'
+dist = compute_dists(testset, trainset)
+K = 9
+
+"""
+print "### Q1 and Q2 ###"
 # Q1: IMPLEMENT HERE kNN CLASSIFIER.
 # YOU CAN USE CODE FROM PREVIOUS WEEK
-dist = np.zeros([len(testset), len(trainset)])
-for i in range(len(testset)):
-    b_i = tools.normalizeL1(bow[testset[i], :])
-    for j in range(len(trainset)):
-        b_j = tools.normalizeL1(bow[trainset[j], :])
-        dist[i, j] = sum(np.minimum(b_i, b_j))
-
-K = 9
+# Q2: USE DIFFERENT STRATEGY
 QUERIES = {
     366: "goal/15",
     150: "bicycle/37",
     84: "beach/31",
     450: "mountain/37"
 }
-accuracy_1 = 0
-accuracy_2 = 0
+
+accuracy = np.zeros(2)
 
 query_set = testset
 query_set = QUERIES
+
 for query_id in query_set:
-    testset_id = np.argwhere(testset == query_id)[0, 0]
-    ranking = np.argsort(dist[testset_id, :])
-    ranking = ranking[::-1]
-    nearest_labels = labels[trainset[ranking[:K]]]
-    true_label = label_names[query_id]
+    true_label = labels[query_id]
+    predicted_labels = kNN_classifier(K, query_id, unique_labels,
+                                        trainset, testset,
+                                        #visualize=True,
+                                        method=BOTH_METHODS, dist=dist)
+    accuracy += map(lambda x: x == true_label, predicted_labels)
 
-    # Label predicted and accuracy according to method of Q1
-    predicted_label1 = unique_labels[np.argmax(np.bincount(nearest_labels)) - 1]
-    accuracy_1 += predicted_label1 == true_label
+for i, acc in enumerate(accuracy):
+    print "Accuracy method %d: %d/%d" % (i, acc, len(query_set))
 
-# Q2: USE DIFFERENT STRATEGY
-#   Only ranking differs from Q1
-    # Label predicted and accuracy according to method of Q2
-    weighted_votes = np.zeros(len(unique_labels))
-    for rank, ranked in enumerate(ranking[:K]):
-        #weighted_votes[labels[trainset[ranked]]-1] += 1 - ((1. + rank) / (2 + rank))
-        weighted_votes[labels[trainset[ranked]]-1] += ((1.) / (1 + rank))
-    predicted_label2 = unique_labels[np.argmax(weighted_votes)]
-    accuracy_2 += predicted_label2 == true_label
+#plt.show()
+"""
 
-    # VISUALIZE RESULTS
-    plt.figure()
-    plt.subplot(2, 5, 1)
-    plt.imshow(Image.open(files[query_id]))
-    plt.title('Query\n' + true_label)
-    plt.axis('off')
-
-    for cnt in range(K):
-        plt.subplot(2, 5, cnt + 2)
-        plt.imshow(Image.open(files[trainset[ranking[cnt]]]))
-        plt.title(unique_labels[nearest_labels[cnt] - 1])
-        plt.axis('off')
-
-print "Accuracy method 1: %d/%d\nAccuracy method 2: %d/%d" % (accuracy_1,
-                                                              len(query_set),
-                                                              accuracy_2,
-                                                              len(query_set))
-plt.show()
-#"""
-
-
-# UNTOUCHED CODE
 """
 # Q3: For K = 9, COMPUTE THE CLASS ACCURACY FOR THE TESTSET
-dist = np.zeros([len(testset), len(trainset)])
-for i in range(len(testset)):
-    for j in range(len(trainset)):
-      dist[i.j] = ...
-
-classAcc = np.zeros(len(unique_labels))
-for c in range(len(unique_labels)):
-  tp = ...
-  fn = ...
-  classAcc[c] = tp / (tp + fn + 0.0)
-
+print "### Q3 ###"
+class_tp = np.zeros(len(unique_labels))
+for test_id in testset:
+    predicted_label = kNN_classifier(K, test_id, unique_labels,
+                                        trainset, testset, dist=dist, method=SUGGESTED_METHOD)
+    class_tp[labels[test_id] - 1] += labels[test_id] == predicted_label
 # REPORT THE CLASS ACC *PER CLASS* and the MEAN
 # THE MEAN SHOULD BE (CLOSE TO): 0.31
+class_total = np.bincount(labels[testset])[1:]
+class_acc = class_tp / class_total
+total_tp = sum(class_tp)
+total = sum(class_total)
+mean_acc = total_tp / float(total)
+
+# Pretty printing
+print "Class accuracy:"
+printstr = "%%2i %%%is %%2i/%%2i = %%.1f" % max(map(len, unique_labels))
+for i, l in enumerate(unique_labels):
+    print printstr % (i + 1, l, class_tp[i], class_total[i], class_acc[i])
+print "Mean accuracy: %3i/%3i = %.2f" % (total_tp,
+                                            total,
+                                            mean_acc)
 """
 
 
@@ -148,7 +185,7 @@ data, labels = week56.generate_toy_data()
 svm_w, svm_b = week56.generate_toy_potential_classifiers(data, labels)
 pred = []
 for i in range(len(data)):
-  pred.append(np.sign((svm_w[0].T * data[i]) + svm_b[0]))
+pred.append(np.sign((svm_w[0].T * data[i]) + svm_b[0]))
 
 
 plt.figure()
