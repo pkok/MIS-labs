@@ -82,6 +82,25 @@ def kNN_classifier(K, query_id, unique_labels, trainset, testset,
     return predicted_labels
 
 
+def class_accuracy(K, unique_labels, trainset, testset,
+                   method=ORIGINAL_METHOD, dist=None):
+    if dist is None:
+        dist = compute_dists(testset, trainset)
+    class_tp = np.zeros(len(unique_labels))
+    for test_id in testset:
+        predicted_label = kNN_classifier(K, test_id, unique_labels, trainset,
+                                         testset, method=method, dist=dist)
+        class_tp[labels[test_id] - 1] += labels[test_id] == predicted_label
+    # REPORT THE CLASS ACC *PER CLASS* and the MEAN
+    # THE MEAN SHOULD BE (CLOSE TO): 0.31
+    class_total = np.bincount(labels[testset])[1:]
+    class_acc = class_tp / class_total
+    total_tp = sum(class_tp)
+    total = sum(class_total)
+    mean_acc = total_tp / float(total)
+    return class_acc, mean_acc
+
+
 ####
 # WORKING CODE
 files, labels, label_names, unique_labels, trainset, testset = week56.get_objects_filedata()
@@ -135,27 +154,16 @@ for i, acc in enumerate(accuracy):
 """
 # Q3: For K = 9, COMPUTE THE CLASS ACCURACY FOR THE TESTSET
 print "### Q3 ###"
-class_tp = np.zeros(len(unique_labels))
-for test_id in testset:
-    predicted_label = kNN_classifier(K, test_id, unique_labels,
-                                        trainset, testset, dist=dist, method=SUGGESTED_METHOD)
-    class_tp[labels[test_id] - 1] += labels[test_id] == predicted_label
-# REPORT THE CLASS ACC *PER CLASS* and the MEAN
-# THE MEAN SHOULD BE (CLOSE TO): 0.31
-class_total = np.bincount(labels[testset])[1:]
-class_acc = class_tp / class_total
-total_tp = sum(class_tp)
-total = sum(class_total)
-mean_acc = total_tp / float(total)
-
+class_acc1, mean_acc1 = class_accuracy(K, unique_labels, trainset, testset,
+                                       method=ORIGINAL_METHOD, dist=dist)
+class_acc2, mean_acc2 = class_accuracy(K, unique_labels, trainset, testset,
+                                       method=SUGGESTED_METHOD, dist=dist)
 # Pretty printing
-print "Class accuracy:"
-printstr = "%%2i %%%is %%2i/%%2i = %%.1f" % max(map(len, unique_labels))
+print "Class accuracy for original and alternative kNN methods:"
+printstr = "%%2i %%%is %%.1f   %%.1f" % max(map(len, unique_labels))
 for i, l in enumerate(unique_labels):
-    print printstr % (i + 1, l, class_tp[i], class_total[i], class_acc[i])
-print "Mean accuracy: %3i/%3i = %.2f" % (total_tp,
-                                            total,
-                                            mean_acc)
+    print printstr % (i + 1, l, class_acc1[i], class_acc2[i])
+print "Mean accuracy: %.2f   %.2f" % (mean_acc1, mean_acc2)
 """
 
 
