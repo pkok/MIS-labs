@@ -19,6 +19,7 @@ from sklearn import svm, datasets
 
 import week56
 
+# For reproducability of results, use a seed for your random generator.
 random.seed(0)
 
 np.set_printoptions(precision=3)
@@ -50,6 +51,9 @@ def kNN_classifier(K, query_id, unique_labels, trainset, testset,
     testset_id = np.argwhere(testset == query_id)[0, 0]
     ranking = np.argsort(dist[testset_id, :])
     ranking = ranking[::-1]
+    tmp = ranking[:K]
+    tmp = trainset[tmp]
+    nearest_labels = labels[tmp]
     nearest_labels = labels[trainset[ranking[:K]]]
 
     # Label predicted and accuracy according to method of Q1
@@ -108,6 +112,7 @@ files, labels, label_names, unique_labels, trainset, testset = week56.get_object
 C = 100
 bow = np.zeros([len(files), C])
 cnt = -1
+label_maxlen = max(map(len, unique_labels))
 for impath in files:
     cnt = cnt + 1
     print '\r' + str(cnt) + '/' + str(len(files)) + '): ' + impath,
@@ -120,11 +125,12 @@ print 'Computing distance matrix...'
 dist = compute_dists(testset, trainset)
 K = 9
 
-"""
-print "### Q1 and Q2 ###"
 # Q1: IMPLEMENT HERE kNN CLASSIFIER.
 # YOU CAN USE CODE FROM PREVIOUS WEEK
 # Q2: USE DIFFERENT STRATEGY
+"""
+# WORKING CODE
+print "### Q1 and Q2 ###"
 QUERIES = {
     366: "goal/15",
     150: "bicycle/37",
@@ -151,8 +157,9 @@ for i, acc in enumerate(accuracy):
 #plt.show()
 """
 
-"""
 # Q3: For K = 9, COMPUTE THE CLASS ACCURACY FOR THE TESTSET
+# WORKING CODE
+"""
 print "### Q3 ###"
 class_acc1, mean_acc1 = class_accuracy(K, unique_labels, trainset, testset,
                                        method=ORIGINAL_METHOD, dist=dist)
@@ -160,31 +167,57 @@ class_acc2, mean_acc2 = class_accuracy(K, unique_labels, trainset, testset,
                                        method=SUGGESTED_METHOD, dist=dist)
 # Pretty printing
 print "Class accuracy for original and alternative kNN methods:"
-printstr = "%%2i %%%is %%.1f   %%.1f" % max(map(len, unique_labels))
+printstr = "%%2i %%%is %%.1f   %%.1f" % label_maxlen
 for i, l in enumerate(unique_labels):
     print printstr % (i + 1, l, class_acc1[i], class_acc2[i])
 print "Mean accuracy: %.2f   %.2f" % (mean_acc1, mean_acc2)
 """
 
 
-# UNTOUCHED CODE
-"""
 # Q4: DO CROSS VALIDATION TO DEFINE PARAMETER K
-K = [1, 3, 5, 7, 9, 15]
+# WORKING CODE
+"""
+print "### Q4 ###"
+Ks = (1, 3, 5, 7, 9, 15)
 
 # - SPLIT TRAINING SET INTO THREE PARTS.
 # - RANDOMLY SELECT TWO PARTS TO TRAIN AND 1 PART TO VALIDATE
-# - MEASURE THE MEAN CLASSIFICATION ACCURACY FOR ALL IMAGES IN THE VALIDATION PART
+shuffled = trainset[:]
+random.shuffle(shuffled)
+size = len(trainset) / 3
+subsets = [shuffled[:size], shuffled[size:-size], shuffled[-size:]]
+subset_ids = set(range(3))
 # - REPEAT FOR ALL POSSIBLE COMBINATIONS OF TWO PARTS
-# - PICK THE BEST K AS THE VALUE OF K THAT WORKS BEST ON AVERAGE FOR ALL POSSIBLE
-#   COMBINATIONS OF TRAINING-VALIDATION SETS
+class_acc = {K: np.zeros(len(unique_labels)) for K in Ks}
+mean_acc = {K: 0 for K in Ks}
+for i in subset_ids:
+    validationset = subsets[i]
+    trainset = np.concatenate(map(lambda x: subsets[x], subset_ids - set([i])))
+    dist = compute_dists(validationset, trainset)
+# - MEASURE THE MEAN CLASSIFICATION ACCURACY FOR ALL IMAGES IN THE VALIDATION PART
+    for K in Ks:
+        ca, ma = class_accuracy(K, unique_labels, trainset, validationset,
+                               method=ORIGINAL_METHOD, dist=dist)
+        class_acc[K] += ca
+        mean_acc[K] += ma
 
-# PART 3. SVM ON TOY DATA
-data, labels = week56.generate_toy_data()
-svm_w, svm_b = week56.generate_toy_potential_classifiers(data,labels)
+for K in Ks:
+    class_acc[K] /= 3.
+    mean_acc[K] /= 3.
+
+# - PICK THE BEST K AS THE VALUE OF K THAT WORKS BEST ON AVERAGE FOR ALL POSSIBLE
+K_opt = max(mean_acc, key=lambda k: mean_acc[k])
+
+print ((4+label_maxlen) * " ") + (len(Ks) * '  %3d  ') % Ks
+printstr = "%%2i  %%%is" % label_maxlen + (len(Ks) * "  %.3f")
+for i, l in enumerate(unique_labels):
+    print printstr % ((i + 1, l) + tuple(class_acc[K][i] for K in Ks))
+print ("%" + str(4+label_maxlen) + "s") % "Mean acc." + len(Ks) * "  %.3f" % tuple(mean_acc[K] for K in Ks)
+print "Best K:", K_opt
 """
 
-
+#   COMBINATIONS OF TRAINING-VALIDATION SETS
+# PART 3. SVM ON TOY DATA
 # Q5: CLASSIFY ACCORDING TO THE 4 DIFFERENT CLASSIFIERS AND VISUALIZE THE RESULTS
 
 # WORKING CODE

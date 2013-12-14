@@ -91,6 +91,29 @@ The accuracy evaluation measure has been implemented, and both $k$-NN label sele
 \end{table}
 
 \section{Cross validation of $k$}
+The mean class accuracy for each value of $k \in \left\{1, 3, 5, 7, 9, 15\right\}$ is reported in Table~\ref{t:crossacc}.  This has only been computed for the label selection mechanism as meant in the first question.  With $k=9$, you will get the highest mean accuracy.
+
+\begin{table}
+  \centering
+  \begin{tabular}{l|rrrrrr}
+    Label &  $k=1$ &  $k=3$ &  $k=5$ &  $k=7$ &  $k=9$ &  $k=15$ \\
+    \hline
+    Airplane  & 0.120  & 0.262  & 0.201  & 0.181  & 0.222  & 0.181 \\
+       Beach  & 0.312  & 0.348  & 0.332  & 0.257  & 0.173  & 0.201 \\
+     Bicycle  & 0.459  & 0.685  & 0.597  & 0.623  & 0.645  & 0.702 \\
+        Boat  & 0.348  & 0.363  & 0.363  & 0.458  & 0.423  & 0.423 \\
+         Car  & 0.261  & 0.244  & 0.283  & 0.350  & 0.311  & 0.333 \\
+      Flower  & 0.486  & 0.399  & 0.418  & 0.381  & 0.401  & 0.374 \\
+        Goal  & 0.156  & 0.062  & 0.130  & 0.124  & 0.084  & 0.068 \\
+    Mountain  & 0.308  & 0.153  & 0.281  & 0.329  & 0.446  & 0.467 \\
+      Temple  & 0.160  & 0.080  & 0.197  & 0.192  & 0.210  & 0.234 \\
+       Train  & 0.097  & 0.013  & 0.013  & 0.013  & 0.000  & 0.000 \\
+    \hline
+  \emph{Mean} & 0.274  & 0.266  & 0.284  & 0.292  & 0.294  & 0.292 \\
+  \end{tabular}
+  \caption{Class accuracies and mean accuracy for different values of $k$ with threefold cross validation.  As can be concluded from the mean, the classifier performs best with $k=9$.}
+  \label{t:crossacc}
+\end{table}
 
 \section{Evaluation of 4 possible classifiers}
 
