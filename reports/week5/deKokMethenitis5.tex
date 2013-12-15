@@ -1,4 +1,4 @@
-\documentclass[a4paper,10pt,twoside]{article}
+\documentclass[a4paper,10pt]{article}
 
 \usepackage[english]{babel}
 \usepackage{amssymb}
@@ -8,6 +8,7 @@
 \usepackage{todonotes}
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage{epstopdf}
 
 \pagestyle{fancy}
 \fancyhead{}
@@ -116,16 +117,93 @@ The mean class accuracy for each value of $k \in \left\{1, 3, 5, 7, 9, 15\right\
 \end{table}
 
 \section{Evaluation of 4 possible classifiers}
+In this part of the assignment we visualize the data obtained by the four different classifiers. Figure~\ref{fig:4classifiers}, shows the resulted predicted labels and the true labels of the four classifiers, as well as the error margin of each one of the classifiers. We can see, that the fourth classifier for $classifier = 3$, we obtain the minimum margin error, so we can say that this classifier is the support vector machines.
+
+\begin{figure}[ht!]
+    \centering
+    \begin{subfigure}{.49\textwidth}
+    \includegraphics[width=1.00\textwidth]{svm1minError.eps}
+    \caption{Classifier 1}
+    \end{subfigure}
+    \begin{subfigure}{.49\textwidth}
+    \includegraphics[width=1.00\textwidth]{svm2minError.eps}
+    \caption{Classifier 2}
+    \end{subfigure}
+    \begin{subfigure}{.49\textwidth}
+    \includegraphics[width=1.00\textwidth]{svm3minError.eps}
+    \caption{Classifier 3}
+    \end{subfigure}
+    \begin{subfigure}{.49\textwidth}
+    \includegraphics[width=1.00\textwidth]{svm4minError.eps}
+    \caption{Classifier 4}
+    \end{subfigure}
+    \caption{Visualization of the four different classifiers.}
+    \label{fig:4classifiers}
+\end{figure}
 
 \section{Use scikit}
-
+Now, we apply the linear classifier from \texttt{scity} library to train it on the provided data and the labels. Using a linear kernel, and C = 1 as it comes from default, the resulting predicted labels are shown in figure~\ref{fig:linearClass}.
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=1.00\textwidth]{svmFit.eps}
+    \caption{Visualization of the predicted label of the model fitted by a linear svm classifier.}
+    \label{fig:linearClass}
+\end{figure}
+We can see that the predicted class for each data point is in most cases correct, with some faulty prediction only near the boundary between the two classes. This is happening because or classifier uses only one vector, and data from different classes are inside the area of the other class. We cannot overcome this problem with a linear classifier.
+    
 \section{Ring data -- linear SVM}
+We run a linear SVM classifier on the ring data and we have visualized the predicted classes as well as the true class of each datapoint in figure~\ref{fig:ringLinear}. The prediction accuracy, is really bad $\sim 50\%$ as each predicted class contains only half of the correct class and half of the data of the wrong predicted class. We cannot predict the classes correct as a linear vector classifier cannot distinguish over data that follow this patterns. We tried also a non-linear classifier over these datapoints and the predicted classes were correct as non-linear classifiers can work with this type of data.
+\begin{figure}[ht!]
+    \centering
+    \begin{subfigure}{.49\textwidth}
+    \includegraphics[width=1.00\textwidth]{ringData.eps}
+    \caption{Ring data.}
+    \end{subfigure}
+    \begin{subfigure}{.49\textwidth}
+    \includegraphics[width=1.00\textwidth]{ringLinearFit.eps}
+    \caption{Predicted classes with a linear classifier.}
+    \end{subfigure}
+    \begin{subfigure}{.49\textwidth}
+    \includegraphics[width=1.00\textwidth]{ringNonLinearFit.eps}
+    \caption{Predicted classes with a non-linear classifier.}
+    \end{subfigure}
+    \caption{Visualization of the predicted label of the ring data model fitted by a linear and a non-linear svm classifier.}
+    \label{fig:ringLinear}
+\end{figure}
+
 
 \section{Non-linear transformations}
+The first way to a non-linear transformation of the data is described as polar-coordinates and in where the data point can be transformed as follows:
+\begin{equation}
+p(x,y) \rightarrow p'(\sqrt{x^2 + y^2}, \arctan(y,x))
+\end{equation}
+In our case in which angle does not help us distinguish between the classes as all datapoints are equally distributed over all angles we could do the same without using the second term like:
+\begin{equation}
+p(x,y) \rightarrow p'(\sqrt{x^2 + y^2})
+\end{equation}
+Now we transformed the two dimensional dataset into the one dimension space, make it feasible and easier than with eq. (1) to work with a linear classifier with one dimension data. As the only thing that we care about is the distance from the point $<0,0>$. Another non-linear transformation that we could use in general and not in this type of data is the following:
+\begin{equation}
+p(x,y) \rightarrow p'(x^2 - y^2, 2xy)
+\end{equation}
 
 \section{Transform to polar coordinates}
+In this step we transformed all data into polar coordinates. Figure~\ref{fig:polarData}, illustrates the resulted data points after the transformation.
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=0.70\textwidth]{polarData.eps}
+    \caption{Ring data transformed into polar coordinates.}
+    \label{fig:polarData}
+\end{figure}
 
 \section{Non-linear SVM}
+Transforming the data into polar coordinates really improves the accuracy from $\sim 0.53$ to $\sim 1.00$, which we saw in figure~\ref{fig:ringLinear}, and has better results than performing a non-linear classifier over the same data $\sim 0.99$. Figure~\ref{fig:linearSVMonPolar}, shows the resulted predicted classes over the polar data and over the original data.
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=0.49\textwidth]{linearSVMonPolar.eps}
+    \includegraphics[width=0.49\textwidth]{final.eps}
+    \caption{Predicted classes on polar data using a linear SVM classifier, plotted also at their original coordinates.}
+    \label{fig:linearSVMonPolar}
+\end{figure}
 
 \section{Image classification -- linear SVM}
 

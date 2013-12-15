@@ -217,26 +217,29 @@ print ("%" + str(4+label_maxlen) + "s") % "Mean acc." + len(Ks) * "  %.3f" % tup
 print "Best K:", K_opt
 """
 
+
+"""
 #   COMBINATIONS OF TRAINING-VALIDATION SETS
 # PART 3. SVM ON TOY DATA
 # Q5: CLASSIFY ACCORDING TO THE 4 DIFFERENT CLASSIFIERS AND VISUALIZE THE RESULTS
-"""
+
 # COMPLETED CODE
 data, labels = week56.generate_toy_data()
 svm_w, svm_b = week56.generate_toy_potential_classifiers(data, labels)
 for x in xrange(4):
     pred = []
-    error = 0.0
+    max_error = [0.0, 0.0]
     for i in range(len(data)):
         distance = (svm_w[x].T * data[i]) + svm_b[x]
-        error += math.sqrt(distance[0][0]**2 + distance[0][1]**2)
+        max_error[int(labels[i])] = max(max_error[int(labels[i])], math.sqrt(distance[0][0]**2 + distance[0][1]**2))
         pred.append(np.sign((svm_w[x].T * data[i]) + svm_b[x]))
 
     plt.figure()
     plt.scatter(data[labels==1, 0], data[labels==1, 1], facecolor='r')
     plt.scatter(data[labels==-1, 0], data[labels==-1, 1], facecolor='g')
+
     for i in range(len(data)):
-        plt.title("error="+ str(error))
+        plt.title("error_margin = "+ str(max_error))
         if (pred[i][0][0] == 1 and pred[i][0][1] == 1):
             plt.plot(data[i][0], data[i][1], marker='o', markersize=10, markeredgecolor='r', markerfacecolor='none', linestyle='none', markeredgewidth=2.0)
         elif (pred[i][0][0] == -1 and pred[i][0][1] == -1):
@@ -263,9 +266,9 @@ for i in range(len(data)):
 plt.show()
 """
 
-
-# PART 4. SVM ON RING DATA
 """
+# PART 4. SVM ON RING DATA
+
 # COMPLETED CODE
 # Q7: USE LINEAR SVM AS BEFORE, VISUALIZE RESULTS and DRAW PREFERRED CLASSIFICATION LINE IN FIGURE
 
@@ -275,11 +278,18 @@ clf.fit(data, labels)
 plt.figure()
 plt.scatter(data[labels==1, 0], data[labels==1, 1], facecolor='r')
 plt.scatter(data[labels==-1, 0], data[labels==-1, 1], facecolor='g')
+false_negatives = 0.0
+true_positives = 0.0
 for i in range(len(data)):
     if (clf.predict(data[i]) > 0):
+        if(labels[i] < 0):
+            false_negatives += 1.0
+        else:
+            true_positives += 1.0
         plt.plot(data[i][0], data[i][1], marker='o', markersize=10, markeredgecolor='r', markerfacecolor='none', linestyle='none', markeredgewidth=2.0)
     else:
         plt.plot(data[i][0], data[i][1], marker='o', markersize=10, markeredgecolor='g', markerfacecolor='none', linestyle='none', markeredgewidth=2.0)
+plt.title("accuracy = "+ str(true_positives / (true_positives + false_negatives)))
 plt.show()
 """
 
@@ -294,11 +304,18 @@ clf.fit(data, labels)
 plt.figure()
 plt.scatter(data[labels==1, 0], data[labels==1, 1], facecolor='r')
 plt.scatter(data[labels==-1, 0], data[labels==-1, 1], facecolor='g')
+false_negatives = 0.0
+true_positives = 0.0
 for i in range(len(data)):
     if (clf.predict(data[i]) > 0):
+        if(labels[i] < 0):
+            false_negatives += 1.0
+        else:
+            true_positives += 1.0
         plt.plot(data[i][0], data[i][1], marker='o', markersize=10, markeredgecolor='r', markerfacecolor='none', linestyle='none', markeredgewidth=2.0)
     else:
         plt.plot(data[i][0], data[i][1], marker='o', markersize=10, markeredgecolor='g', markerfacecolor='none', linestyle='none', markeredgewidth=2.0)
+plt.title("accuracy = "+ str(true_positives / (true_positives + false_negatives)))
 plt.show()
 """
 
@@ -314,19 +331,26 @@ plt.figure()
 plt.scatter(polar_data[labels==1, 0], polar_data[labels==1, 1], facecolor='r')
 plt.scatter(polar_data[labels==-1, 0], polar_data[labels==-1, 1], facecolor='g')
 plt.show()
-
-
+"""
+"""
 # Q10: USE THE LINEAR SVM AS BEFORE (BUT ON DATA 2)
 clf = svm.LinearSVC()
 clf.fit(polar_data, labels)  
 plt.figure()
 plt.scatter(polar_data[labels==1, 0], polar_data[labels==1, 1], facecolor='r')
 plt.scatter(polar_data[labels==-1, 0], polar_data[labels==-1, 1], facecolor='g')
+false_negatives = 0.0
+true_positives = 0.0
 for i in range(len(polar_data)):
     if (clf.predict(polar_data[i]) > 0):
+        if(labels[i] < 0):
+            false_negatives += 1.0
+        else:
+            true_positives += 1.0
         plt.plot(polar_data[i][0], polar_data[i][1], marker='o', markersize=10, markeredgecolor='r', markerfacecolor='none', linestyle='none', markeredgewidth=2.0)
     else:
         plt.plot(polar_data[i][0], polar_data[i][1], marker='o', markersize=10, markeredgecolor='g', markerfacecolor='none', linestyle='none', markeredgewidth=2.0)
+plt.title("accuracy = "+ str(true_positives / (true_positives + false_negatives)))
 plt.show()
 
 # PLOT THE RESULTS IN ORIGINAL DATA

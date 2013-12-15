@@ -1,0 +1,13 @@
+\BOOKMARK [1][-]{section.1}{Implement k-NN classifier}{}% 1
+\BOOKMARK [1][-]{section.2}{Different k-NN strategy}{}% 2
+\BOOKMARK [1][-]{section.3}{Implement mean class accuracy}{}% 3
+\BOOKMARK [1][-]{section.4}{Cross validation of k}{}% 4
+\BOOKMARK [1][-]{section.5}{Evaluation of 4 possible classifiers}{}% 5
+\BOOKMARK [1][-]{section.6}{Use scikit}{}% 6
+\BOOKMARK [1][-]{section.7}{Ring data \205 linear SVM}{}% 7
+\BOOKMARK [1][-]{section.8}{Non-linear transformations}{}% 8
+\BOOKMARK [1][-]{section.9}{Transform to polar coordinates}{}% 9
+\BOOKMARK [1][-]{section.10}{Non-linear SVM}{}% 10
+\BOOKMARK [1][-]{section.11}{Image classification \205 linear SVM}{}% 11
+\BOOKMARK [1][-]{section.12}{Image classification \205 discussing the results}{}% 12
+\BOOKMARK [1][-]{section.13}{Image classification \205 comparison k-NN vs SVM}{}% 13
