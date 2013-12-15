@@ -243,13 +243,27 @@ for x in xrange(4):
     plt.show()
 """
 
-# UNTOUCHED CODE
-"""
+
+# COMPLETED CODE
 # Q6: USE HERE SVC function from sklearn to run a linear svm
 # THEN USE THE PREDICT FUNCTION TO PREDICT THE LABEL FOR THE SAME DATA
-svc = svm.SVC( ... )
-pred = ...
-"""
+
+data, labels = week56.generate_toy_data()
+clf = svm.SVR()
+clf.fit(data, labels)  
+svm.SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0, degree=3,
+gamma=0.0, kernel='rbf', max_iter=-1, probability=False, random_state=None,
+shrinking=True, tol=0.001, verbose=True)
+plt.figure()
+plt.scatter(data[labels==1, 0], data[labels==1, 1], facecolor='r')
+plt.scatter(data[labels==-1, 0], data[labels==-1, 1], facecolor='g')
+for i in range(len(data)):
+    if (clf.predict(data[i]) > 0):
+        plt.plot(data[i][0], data[i][1], marker='o', markersize=10, markeredgecolor='r', markerfacecolor='none', linestyle='none', markeredgewidth=2.0)
+    else:
+        plt.plot(data[i][0], data[i][1], marker='o', markersize=10, markeredgecolor='g', markerfacecolor='none', linestyle='none', markeredgewidth=2.0)
+plt.show()
+
 
 
 # UNTOUCHED CODE
