@@ -16,6 +16,7 @@ import tools
 import math
 import pylab as pl
 from sklearn import svm, datasets
+import copy
 
 import week56
 
@@ -301,24 +302,47 @@ for i in range(len(data)):
 plt.show()
 """
 
-
-
-C = 1.0  # SVM regularization parameter
+"""
 # Q9: TRANSFORM DATA TO POLAR COORDINATES FIRST
-rad =
-ang =
-# PLOT POLAR DATA
+data, labels = week56.generate_ring_data()
+polar_data = copy.copy(data)
+for i in xrange(len(data)):
+    polar_data[i,0] = math.sqrt(data[i,0]**2 + data[i,1]**2)
+    polar_data[i,1] = np.arctan2(data[i,1],data[i,0])
 
-data2 = np.vstack((rad, ang))
-data2 = data2.T
+plt.figure()
+plt.scatter(polar_data[labels==1, 0], polar_data[labels==1, 1], facecolor='r')
+plt.scatter(polar_data[labels==-1, 0], polar_data[labels==-1, 1], facecolor='g')
+plt.show()
+
 
 # Q10: USE THE LINEAR SVM AS BEFORE (BUT ON DATA 2)
+clf = svm.LinearSVC()
+clf.fit(polar_data, labels)  
+plt.figure()
+plt.scatter(polar_data[labels==1, 0], polar_data[labels==1, 1], facecolor='r')
+plt.scatter(polar_data[labels==-1, 0], polar_data[labels==-1, 1], facecolor='g')
+for i in range(len(polar_data)):
+    if (clf.predict(polar_data[i]) > 0):
+        plt.plot(polar_data[i][0], polar_data[i][1], marker='o', markersize=10, markeredgecolor='r', markerfacecolor='none', linestyle='none', markeredgewidth=2.0)
+    else:
+        plt.plot(polar_data[i][0], polar_data[i][1], marker='o', markersize=10, markeredgecolor='g', markerfacecolor='none', linestyle='none', markeredgewidth=2.0)
+plt.show()
 
 # PLOT THE RESULTS IN ORIGINAL DATA
+plt.figure()
+plt.scatter(data[labels==1, 0], data[labels==1, 1], facecolor='r')
+plt.scatter(data[labels==-1, 0], data[labels==-1, 1], facecolor='g')
+for i in range(len(data)):
+    if (clf.predict(polar_data[i]) > 0):
+        plt.plot(data[i][0], data[i][1], marker='o', markersize=10, markeredgecolor='r', markerfacecolor='none', linestyle='none', markeredgewidth=2.0)
+    else:
+        plt.plot(data[i][0], data[i][1], marker='o', markersize=10, markeredgecolor='g', markerfacecolor='none', linestyle='none', markeredgewidth=2.0)
+plt.show()
+"""
 
-# PLOT POLAR DATA
 
-
+"""
 # PART 5. LOAD BAG-OF-WORDS FOR THE OBJECT IMAGES AND RUN SVM CLASSIFIER FOR THE OBJECTS
 
 files, labels, label_names, unique_labels, trainset, testset = week56.get_objects_filedata()
