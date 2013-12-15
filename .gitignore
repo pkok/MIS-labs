@@ -37,3 +37,11 @@ nosetests.xml
 
 # Rope
 .ropeproject
+
+# LaTeX helper files -- please stop adding them!
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.synctex.gz
