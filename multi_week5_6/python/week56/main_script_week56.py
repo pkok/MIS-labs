@@ -104,7 +104,7 @@ def class_accuracy(K, unique_labels, trainset, testset,
     mean_acc = total_tp / float(total)
     return class_acc, mean_acc
 
-
+"""
 ####
 # WORKING CODE
 files, labels, label_names, unique_labels, trainset, testset = week56.get_objects_filedata()
@@ -124,7 +124,7 @@ print ''
 print 'Computing distance matrix...'
 dist = compute_dists(testset, trainset)
 K = 9
-
+"""
 # Q1: IMPLEMENT HERE kNN CLASSIFIER.
 # YOU CAN USE CODE FROM PREVIOUS WEEK
 # Q2: USE DIFFERENT STRATEGY
@@ -219,27 +219,29 @@ print "Best K:", K_opt
 #   COMBINATIONS OF TRAINING-VALIDATION SETS
 # PART 3. SVM ON TOY DATA
 # Q5: CLASSIFY ACCORDING TO THE 4 DIFFERENT CLASSIFIERS AND VISUALIZE THE RESULTS
-
-# WORKING CODE
 """
+# COMPLETED CODE
 data, labels = week56.generate_toy_data()
 svm_w, svm_b = week56.generate_toy_potential_classifiers(data, labels)
-pred = []
-for i in range(len(data)):
-pred.append(np.sign((svm_w[0].T * data[i]) + svm_b[0]))
+for x in xrange(4):
+    pred = []
+    error = 0.0
+    for i in range(len(data)):
+        distance = (svm_w[x].T * data[i]) + svm_b[x]
+        error += math.sqrt(distance[0][0]**2 + distance[0][1]**2)
+        pred.append(np.sign((svm_w[x].T * data[i]) + svm_b[x]))
 
-
-plt.figure()
-plt.scatter(data[labels==1, 0], data[labels==1, 1], facecolor='r')
-plt.scatter(data[labels==-1, 0], data[labels==-1, 1], facecolor='g')
-plt.plot(data[pred==1, 0], data[pred==1, 1], marker='o', markersize=10, markeredgecolor='r', markerfacecolor='none', linestyle='none', markeredgewidth=2.0)
-plt.plot(data[pred==-1, 0], data[pred==-1, 1], marker='o', markersize=10, markeredgecolor='g', markerfacecolor='none', linestyle='none', markeredgewidth=2.0)
-
-plt.show()
+    plt.figure()
+    plt.scatter(data[labels==1, 0], data[labels==1, 1], facecolor='r')
+    plt.scatter(data[labels==-1, 0], data[labels==-1, 1], facecolor='g')
+    for i in range(len(data)):
+        plt.title("error="+ str(error))
+        if (pred[i][0][0] == 1 and pred[i][0][1] == 1):
+            plt.plot(data[i][0], data[i][1], marker='o', markersize=10, markeredgecolor='r', markerfacecolor='none', linestyle='none', markeredgewidth=2.0)
+        elif (pred[i][0][0] == -1 and pred[i][0][1] == -1):
+            plt.plot(data[i][0], data[i][1], marker='o', markersize=10, markeredgecolor='g', markerfacecolor='none', linestyle='none', markeredgewidth=2.0)
+    plt.show()
 """
-
-
-
 
 # UNTOUCHED CODE
 """
