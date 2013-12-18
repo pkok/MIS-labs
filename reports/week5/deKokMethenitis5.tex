@@ -211,14 +211,87 @@ Transforming the data into polar coordinates really improves the accuracy from $
     \label{fig:linearSVMonPolar}
 \end{figure}
 
-\begin{comment}
 \section{Image classification -- linear SVM}
+The result of threefold crossvalidation on training SVMs with different values for $C$ on the dataset are presented in Table~\ref{t:crosssvm}.  While lower values for $C$ give slightly better accuracies, enlarging the book size has a more drastic effect.  The highest mean accuracy is obtained with a booksize of 4000 and $C = 0.1$.
+\begin{table}
+  \centering
+  \begin{tabular}{r|rrrr}
+    Book size & $C = 0.1$ & $C = 1$ & $C = 10$ & $C = 1000$ \\
+    \hline
+      10 &  0.132 &  0.126 &  0.134 &  0.140 \\
+     100 &  0.242 &  0.240 &  0.234 &  0.214 \\
+     500 &  0.332 &  0.326 &  0.328 &  0.328 \\
+    1000 &  0.352 &  0.340 &  0.340 &  0.340 \\
+    4000 &  0.370 &  0.368 &  0.366 &  0.362 \\
+  \end{tabular}
+  \caption{Mean accuracies for different codebook sizes and different values of the SVM parameter $C$. The results are from training with threefold crossvalidation on the bag-of-words representation of the image dataset.}
+  \label{t:crosssvm}
+\end{table}
 
 \section{Image classification -- discussing the results}
+Class accuracies are shown in Table~\ref{t:svmclassacc}.  A ranking is presented in Table~\ref{t:svmclassrank} as visualization.  One can see that the \texttt{mountain} class is classified most often correctly.  The \texttt{airplane} and \texttt{train} classes seem to be hardest to classify.  While inspecting the data sets, it becomes clear that the airplanes and trains are all on heavily varying backgrounds, whereas the mountains have similar colors and shapes in their environment.
+
+\begin{table}
+  \begin{subtable}{.48\textwidth}
+    \centering
+    \begin{tabular}{l|r}
+      Label & Class accuracy \\
+      \hline
+      airplane & 0.1 \\
+      beach & 0.5 \\
+      bicycle & 0.2 \\
+      boat & 0.2 \\
+      car & 0.5 \\
+      flower & 0.5 \\
+      goal & 0.4 \\
+      mountain & 0.6 \\
+      temple & 0.4 \\
+      train & 0.1 \\
+      \hline
+      \emph{Mean accuracy} & 0.35 \\
+    \end{tabular}
+    \caption{Class accuracies.}
+    \label{t:svmclassacc}
+  \end{subtable}
+  \hspace*{\fill}
+  \begin{subtable}{.48\textwidth}
+    \centering
+    \begin{tabular}{rl}
+      Rank & Class \\
+      \hline
+      1 & mountain \\
+      2 & beach \\
+      2 & car \\
+      2 & flower \\
+      5 & goal \\
+      5 & temple \\
+      7 & bicycle \\
+      7 & boat \\
+      9 & airplane \\
+      9 & train \\
+    \end{tabular}
+    \caption{Class ranking.}
+    \label{t:svmclassrank}
+  \end{subtable}
+  \caption{Class accuracies and their ranking of the SVM trained on the complete training set, on 4000 words per data point and with $C = 0.1$.}
+\end{table}
 
 \section{Image classification -- comparison $k$-NN vs SVM}
-\end{comment}
-
+Table~\ref{t:svmvsknn} presents the mean accuracies for the optimally tuned SVM (with $C = 0.1$) and $k$-NN (with $k=9$).  While the $k$-NN classifier does not benefit from large code books, the SVM does seem to benefit from this.
+\begin{table}
+  \centering
+  \begin{tabular}{l|rr}
+    Book size & SVM with $C = 0.1$ & $k$-NN with $k = 9$ \\
+    \hline
+      10 & 0.22 & 0.22 \\
+     100 & 0.31 & 0.31 \\
+     500 & 0.32 & 0.34 \\
+    1000 & 0.37 & 0.28 \\
+    4000 & 0.35 & 0.26 \\
+  \end{tabular}
+  \caption{Mean accuracies for the optimally tuned SVM and $k$-NN.}
+  \label{t:svmvsknn}
+\end{table}
 
 %\bibliographystyle{plain}
 %\bibliography{thereference}

@@ -1,20 +1,12 @@
 import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
-import matplotlib.colors as clr
-import scipy as sc
-import scipy.cluster.vq as cluster
 import sys
 import random
 import os
-import matplotlib.cm as cmx
-import pickle
-from collections import defaultdict
 import math
 sys.path.insert(0, '../')
 import tools
-import math
-import pylab as pl
 from sklearn import svm, datasets
 import copy
 
@@ -105,22 +97,29 @@ def class_accuracy(K, unique_labels, trainset, testset,
     mean_acc = total_tp / float(total)
     return class_acc, mean_acc
 
+
+def load_bow(booksize, files, mute=False):
+    bow = np.zeros([len(files), booksize])
+    cnt = -1
+    for impath in files:
+        cnt = cnt + 1
+        if not mute:
+            print '\r' + str(cnt) + '/' + str(len(files)) + '): ' + impath,
+        filpat, filnam, filext = tools.fileparts(impath)
+        filpat2, filnam2, filext2 = tools.fileparts(filpat)
+        bow[cnt, :] = week56.load_bow('../../data/bow_objects/codebook_' + str(booksize) + '/' + filnam2 + '/' + filnam + '.pkl')
+    if not mute:
+        print ''
+    return bow
+
+
 """
 ####
 # WORKING CODE
 files, labels, label_names, unique_labels, trainset, testset = week56.get_objects_filedata()
 
-C = 100
-bow = np.zeros([len(files), C])
-cnt = -1
+bow = load_bow(100, files)
 label_maxlen = max(map(len, unique_labels))
-for impath in files:
-    cnt = cnt + 1
-    print '\r' + str(cnt) + '/' + str(len(files)) + '): ' + impath,
-    filpat, filnam, filext = tools.fileparts(impath)
-    filpat2, filnam2, filext2 = tools.fileparts(filpat)
-    bow[cnt, :] = week56.load_bow('../../data/bow_objects/codebook_' + str(C) + '/' + filnam2 + '/' + filnam + '.pkl')
-print ''
 
 print 'Computing distance matrix...'
 dist = compute_dists(testset, trainset)
@@ -254,7 +253,7 @@ for x in xrange(4):
 
 data, labels = week56.generate_toy_data()
 clf = svm.LinearSVC()
-clf.fit(data, labels)  
+clf.fit(data, labels)
 plt.figure()
 plt.scatter(data[labels==1, 0], data[labels==1, 1], facecolor='r')
 plt.scatter(data[labels==-1, 0], data[labels==-1, 1], facecolor='g')
@@ -274,7 +273,7 @@ plt.show()
 
 data, labels = week56.generate_ring_data()
 clf = svm.LinearSVC()
-clf.fit(data, labels)  
+clf.fit(data, labels)
 plt.figure()
 plt.scatter(data[labels==1, 0], data[labels==1, 1], facecolor='r')
 plt.scatter(data[labels==-1, 0], data[labels==-1, 1], facecolor='g')
@@ -300,7 +299,7 @@ plt.show()
 
 data, labels = week56.generate_ring_data()
 clf = svm.SVC()
-clf.fit(data, labels)  
+clf.fit(data, labels)
 plt.figure()
 plt.scatter(data[labels==1, 0], data[labels==1, 1], facecolor='r')
 plt.scatter(data[labels==-1, 0], data[labels==-1, 1], facecolor='g')
@@ -335,7 +334,7 @@ plt.show()
 """
 # Q10: USE THE LINEAR SVM AS BEFORE (BUT ON DATA 2)
 clf = svm.LinearSVC()
-clf.fit(polar_data, labels)  
+clf.fit(polar_data, labels)
 plt.figure()
 plt.scatter(polar_data[labels==1, 0], polar_data[labels==1, 1], facecolor='r')
 plt.scatter(polar_data[labels==-1, 0], polar_data[labels==-1, 1], facecolor='g')
@@ -366,27 +365,87 @@ plt.show()
 """
 
 
-"""
 # PART 5. LOAD BAG-OF-WORDS FOR THE OBJECT IMAGES AND RUN SVM CLASSIFIER FOR THE OBJECTS
 
+random.seed(0)
 files, labels, label_names, unique_labels, trainset, testset = week56.get_objects_filedata()
 
-K = 500
-bow = np.zeros([len(files), K])
-cnt = -1
-for impath in files:
-    cnt = cnt + 1
-    print str(cnt) + '/' + str(len(files)) + '): ' + impath
-    filpat, filnam, filext = tools.fileparts(impath)
-    filpat2, filnam2, filext2 = tools.fileparts(filpat)
-    bow[cnt, :] = week56.load_bow('../../data/bow_objects/codebook_' + str(K) + '/' + filnam2 + '/' + filnam + '.pkl')
-
+"""
 # Q11: USE linear SVM, perform CROSS VALIDATION ON C = (.1,1,10,100), evaluate using MEAN CLASS ACCURACY
+print "### Q11 ###"
+booksizes = (10, 100, 500, 1000, 4000)
+Cs = (.1,1,10,100)
+mean_acc = {booksize: {C: 0 for C in Cs} for booksize in booksizes}
+C_opt = {booksize: 0 for booksize in booksizes}
 
+for booksize in booksizes:
+    #1) Load the histograms for all images and all classes.
+    #2) Run the linear SVM classifier for them using different codebook sizes.
+    print "Using codebook", booksize
+    bow = load_bow(booksize, files)
+
+    #3) Tune with cross-validation on the training data the SVM parameter $C$ (use 3 splits of the train set).
+    shuffled = trainset[:]
+    random.shuffle(shuffled)
+    size = len(trainset) / 3
+    subsets = [shuffled[:size], shuffled[size:-size], shuffled[-size:]]
+    subset_ids = set(range(3))
+    # - REPEAT FOR ALL POSSIBLE COMBINATIONS OF TWO PARTS
+    for i in subset_ids:
+        train_ids = np.concatenate(map(lambda x: subsets[x], subset_ids - set([i])))
+
+    #4) Classify all your test images for all your classes and report the mean classification accuracy.
+        for C in Cs:
+            clf = svm.LinearSVC(C=C)
+            clf.fit(bow[train_ids], labels[train_ids])
+            mean_acc[booksize][C] += clf.score(bow[subsets[i]], labels[subsets[i]])
+
+    for C in Cs:
+        mean_acc[booksize][C] /= 3.
+
+    #5) What do you observe?
+    C_opt[booksize] = max(mean_acc[booksize], key=lambda C: mean_acc[booksize][C])
+    print "Best C for booksize", booksize, ":", C_opt[booksize]
+
+#6) Repeat (1-5) for different codebook sizes and report which codebook works the best for you.
+C_opt = max(C_opt, key=lambda booksize: C_opt[booksize])
+print "Overall best book size:", C_opt
+print "Booksize C.1    C1      C10    C1000",
+for booksize in booksizes:
+    print "\n%4d " % booksize,
+    for C in Cs:
+        print " %.3f " % mean_acc[booksize][C],
+"""
+
+"""
 # Q12: Visualize the best performing SVM, what are good classes, bad classes, examples of images etc
+print "### Q12 ###"
+bow = load_bow(4000, files)
+clf = svm.LinearSVC(C=0.1)
+clf.fit(bow[trainset], labels[trainset])
+class_test = [list() for i in range(len(unique_labels))]
+for test_datum in testset:
+    class_test[labels[test_datum] - 1].append(test_datum)
+label_maxlen = max(map(len, unique_labels))
+for i, test in enumerate(class_test):
+    print ("%%%ds %%.3f" % label_maxlen) % (unique_labels[i], clf.score(bow[test], labels[test]))
+print "Mean acc:", clf.score(bow[testset], labels[testset])
+"""
 
+"""
 # Q13: Compare SVM with k-NN
+booksizes = (10, 100, 500, 1000, 4000)
+print "### Q13 ###"
+for booksize in booksizes:
+    bow = load_bow(booksize, files, mute=True)
 
+    clf = svm.LinearSVC(C=0.1)
+    clf.fit(bow[trainset], labels[trainset])
+    svm_acc = clf.score(bow[testset], labels[testset])
 
-
+    K = 9
+    dist = compute_dists(testset, trainset)
+    _, knn_acc = class_accuracy(K, unique_labels, trainset, testset,
+                                        method=ORIGINAL_METHOD, dist=dist)
+    print "%4d & %.2f & %.2f \\\\" % (booksize, svm_acc, knn_acc)
 """
