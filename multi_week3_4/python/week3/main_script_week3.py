@@ -190,6 +190,11 @@ QUERIES = (
     'all_souls_000065.jpg',
     'all_souls_000075.jpg'
 )
+QUERIES = (
+    'all_souls_000065.jpg',
+    'radcliffe_camera_000390.jpg',
+    'christ_church_000190.jpg'
+)
 AVERAGE_PRECISION = ''
 QUERY_PLOT_SYMBOLS = dict(zip(QUERIES, ('ro', 'gs', 'b^')))
 QUERY_PLOT_SYMBOLS[AVERAGE_PRECISION] = 'kx'
